@@ -260,6 +260,29 @@ static inline void sha1_to_hex(sha1_digest *digest, char *out)
 	#undef D
 }
 
+#include <unistd.h>
+#include <fcntl.h>
+
+static inline int sha1_file(char *filename, sha1_digest *digest)
+{
+	#define BLKSIZE 4096
+	unsigned char buf[BLKSIZE];
+	int fd; ssize_t n;
+	struct sha1_ctx ctx;
+
+	fd = open(filename, O_RDONLY);
+	if (fd == -1)
+		return 1;
+	sha1_init(&ctx);
+	while ((n = read(fd, buf, BLKSIZE)) > 0)
+		sha1_update(&ctx, buf, 0, n);
+	if (n == 0)
+		sha1_finalize(&ctx, digest);
+	close(fd);
+	return n < 0;
+	#undef BLKSIZE
+}
+
 /* this part implement the OCaml binding */
 #include <caml/mlvalues.h>
 #include <caml/memory.h>
@@ -297,6 +320,18 @@ CAMLprim value stub_sha1_finalize(value ctx)
 
 	result = caml_alloc(sizeof(sha1_digest), Abstract_tag);
 	sha1_finalize(GET_CTX_STRUCT(ctx), (sha1_digest *) result);
+
+	CAMLreturn(result);
+}
+
+CAMLprim value stub_sha1_file(value name)
+{
+	CAMLparam1(name);
+	CAMLlocal1(result);
+
+	result = caml_alloc(sizeof(sha1_digest), Abstract_tag);
+	if (sha1_file(String_val(name), (sha1_digest *) result))
+		caml_failwith("file error");
 
 	CAMLreturn(result);
 }

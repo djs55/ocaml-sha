@@ -20,6 +20,7 @@ external init: unit -> sha1_ctx = "stub_sha1_init"
 external update: sha1_ctx -> string -> int -> int -> unit = "stub_sha1_update"
 external finalize: sha1_ctx -> t = "stub_sha1_finalize"
 external to_hex: t -> string = "stub_sha1_to_hex"
+external file_fast: string -> t = "stub_sha1_file"
 
 let string s =
 	let ctx = init () in

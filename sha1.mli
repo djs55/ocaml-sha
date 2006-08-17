@@ -34,6 +34,9 @@ val channel : in_channel -> int -> t
 (** Return the digest of the file whose name is given. *)
 val file : string -> t
 
+(** Return the digest of the file whose name is given using fast C function *)
+val file_fast : string -> t
+
 (** Write a digest on the given output channel. *)
 val output : out_channel -> t -> unit
 
