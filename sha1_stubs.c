@@ -281,7 +281,7 @@ CAMLprim value stub_sha1_update(value ctx, value data, value ofs, value len)
 	CAMLparam4(ctx, data, ofs, len);
 
 	sha1_update(GET_CTX_STRUCT(ctx), (unsigned char *) data,
-			Int_val(ofs), Int_val(len));
+	            Int_val(ofs), Int_val(len));
 
 	CAMLreturn(Val_unit);
 }
