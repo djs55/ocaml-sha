@@ -22,8 +22,7 @@ struct sha1_ctx
 	unsigned int h[5];
 	unsigned int w[80];
 	int len;
-	unsigned int sz_high;
-	unsigned int sz_low;
+	unsigned long long sz;
 };
 
 typedef struct { unsigned char digest[20]; } sha1_digest;
@@ -207,9 +206,8 @@ static void sha1_update(struct sha1_ctx *ctx, unsigned char *data,
 			sha1_do_chunk(ctx->w, ctx->h);
 			ctx->len = 0;
 		}
-		ctx->sz_low += 8;
-		ctx->sz_high += (ctx->sz_low < 8);
 	}
+	ctx->sz += 8 * (len - ofs);
 }
 
 /**
@@ -220,17 +218,21 @@ static void sha1_finalize(struct sha1_ctx *ctx, sha1_digest *out)
 	unsigned char pad1 = 0x80;
 	unsigned char pad0 = 0x00;
 	unsigned char padlen[8];
+	unsigned int sz_high, sz_low;
 	int i;
 
+	sz_high = (unsigned int) (ctx->sz >> 32);
+	sz_low = (unsigned int) (ctx->sz);
+
 	/* add padding and update data with it */
-	padlen[0] = (unsigned char)((ctx->sz_high >> 24) & 255);
-	padlen[1] = (unsigned char)((ctx->sz_high >> 16) & 255);
-	padlen[2] = (unsigned char)((ctx->sz_high >> 8) & 255);
-	padlen[3] = (unsigned char)((ctx->sz_high >> 0) & 255);
-	padlen[4] = (unsigned char)((ctx->sz_low >> 24) & 255);
-	padlen[5] = (unsigned char)((ctx->sz_low >> 16) & 255);
-	padlen[6] = (unsigned char)((ctx->sz_low >> 8) & 255);
-	padlen[7] = (unsigned char)((ctx->sz_low >> 0) & 255);
+	padlen[0] = (unsigned char)((sz_high >> 24) & 255);
+	padlen[1] = (unsigned char)((sz_high >> 16) & 255);
+	padlen[2] = (unsigned char)((sz_high >> 8) & 255);
+	padlen[3] = (unsigned char)((sz_high >> 0) & 255);
+	padlen[4] = (unsigned char)((sz_low >> 24) & 255);
+	padlen[5] = (unsigned char)((sz_low >> 16) & 255);
+	padlen[6] = (unsigned char)((sz_low >> 8) & 255);
+	padlen[7] = (unsigned char)((sz_low >> 0) & 255);
 
 	sha1_update(ctx, &pad1, 0, 1);
 	while (ctx->len != 56)
