@@ -195,7 +195,7 @@ static inline void sha1_do_chunk(unsigned int w[], unsigned int h[])
  * sha1_update - Update the SHA1 context values with length bytes of data
  */
 static void sha1_update(struct sha1_ctx *ctx, unsigned char *data,
-		int ofs, int len)
+                        int ofs, int len)
 {
 	int i;
 
