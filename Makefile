@@ -13,11 +13,11 @@ all: sha1.cmi sha1.cma sha1.cmxa
 sha1sum: sha1.cmxa sha1sum.cmx
 	$(OCAMLOPT) $(OCAMLOPTFLAGS) -o $@ $+
 
-sha1.cma: sha1_stubs.o sha1.cmo
-	$(OCAMLC) -a -o $@ -custom $+
+sha1.cma: sha1.cmi sha1_stubs.o sha1.cmo
+	$(OCAMLC) -a -o $@ -custom sha1_stubs.o sha1.cmo
 
-sha1.cmxa: sha1_stubs.o sha1.cmx
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ $+
+sha1.cmxa: sha1.cmi sha1_stubs.o sha1.cmx
+	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ sha1_stubs.o sha1.cmx
 
 tests: sha1.test
 	./sha1.test
