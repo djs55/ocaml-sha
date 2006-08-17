@@ -38,7 +38,7 @@ let channel chan len =
 	and buf = String.create 4096 in
 
 	let left = ref len and eof = ref false in
-	while (!left == -1 || !left > 0) && not !eof 
+	while (!left == -1 || !left > 0) && not !eof
 	do
 		let len = if !left < 0 then 4096 else (min !left 4096) in
 		let readed = Pervasives.input chan buf 0 len in
