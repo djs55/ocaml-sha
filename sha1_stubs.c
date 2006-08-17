@@ -247,13 +247,15 @@ static void sha1_finalize(struct sha1_ctx *ctx, sha1_digest *out)
 /**
  * sha1_to_hex - Transform the SHA1 digest into a readable data
  */
-static void sha1_to_hex(sha1_digest *digest, char *out)
+static inline void sha1_to_hex(sha1_digest *digest, char *out)
 {
-	char *p;
-	int i;
-
-	for (p = out, i = 0; i < 20; i++, p += 2)
-		snprintf(p, 3, "%02x", digest->digest[i]);
+	#define D(i) digest->digest[i]
+	snprintf(out, 41, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
+	                  "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+	         D(0), D(1), D(2), D(3), D(4), D(5), D(6), D(7), D(8), D(9),
+	         D(10), D(11), D(12), D(13), D(14), D(15), D(16), D(17), D(18),
+	         D(19));
+	#undef D
 }
 
 /* this part implement the OCaml binding */
