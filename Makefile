@@ -1,6 +1,5 @@
 CC = gcc
 CFLAGS = -Wall -O3 -funroll-loops
-#CFLAGS = -Wall -O2
 OCAMLC = ocamlc
 OCAMLOPT = ocamlopt
 
