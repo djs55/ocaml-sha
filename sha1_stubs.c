@@ -198,10 +198,21 @@ static void sha1_update(struct sha1_ctx *ctx, unsigned char *data,
 {
 	int i;
 
-	for (i = ofs; i < len; i++) {
-		ctx->w[ctx->len / 4] <<= 8;
-		ctx->w[ctx->len / 4] |= (unsigned int) data[i];
-		ctx->len += 1;
+	i = ofs;
+	while (i < len) {
+		if ((ctx->len % 4 == 0) && (i + 4) < len) {
+			ctx->w[ctx->len / 4] = (((unsigned int) data[i]) << 24)
+			                 | (((unsigned int) data[i + 1]) << 16)
+			                 | (((unsigned int) data[i + 2]) << 8)
+			                 | ((unsigned int) data[i + 3]);
+			ctx->len += 4;
+			i += 4;
+		} else {
+			ctx->w[ctx->len / 4] <<= 8;
+			ctx->w[ctx->len / 4] |= (unsigned int) data[i];
+			ctx->len += 1;
+			i++;
+		}
 		if ((ctx->len % 64) == 0) {
 			sha1_do_chunk(ctx->w, ctx->h);
 			ctx->len = 0;
