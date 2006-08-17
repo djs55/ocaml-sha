@@ -61,12 +61,12 @@ static inline unsigned int rol32(unsigned int word, unsigned int shift)
 #define R(a, b, c, d, e, f, k, w)  e += rol32(a, 5) + f(b, c, d) + k + w; \
                                    b = rol32(b, 30)
 
+#define M(i)  (w[i & 0x0f] = rol32(w[i & 0x0f] ^ w[(i - 14) & 0x0f] \
+              ^ w[(i - 8) & 0x0f] ^ w[(i - 3) & 0x0f], 1))
+
 static inline void sha1_do_chunk(unsigned int w[], unsigned int h[])
 {
-	unsigned int a, b, c, d, e, i;
-
-	for (i = 16; i <= 79; i++)
-		w[i] = rol32(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 1);
+	unsigned int a, b, c, d, e;
 
 	a = h[0];
 	b = h[1];
@@ -76,7 +76,7 @@ static inline void sha1_do_chunk(unsigned int w[], unsigned int h[])
 
 	/* following unrolled from:
 	 *	for (i = 0; i < 20; i++) {
-	 *		t = f1(b, c, d) + K1 + rol32(a, 5) + e + w[i];
+	 *		t = f1(b, c, d) + K1 + rol32(a, 5) + e + M(i);
 	 *		e = d; d = c; c = rol32(b, 30); b = a; a = t;
 	 *	}
 	 */
@@ -96,93 +96,93 @@ static inline void sha1_do_chunk(unsigned int w[], unsigned int h[])
 	R(c, d, e, a, b, f1, K1, w[13]);
 	R(b, c, d, e, a, f1, K1, w[14]);
 	R(a, b, c, d, e, f1, K1, w[15]);
-	R(e, a, b, c, d, f1, K1, w[16]);
-	R(d, e, a, b, c, f1, K1, w[17]);
-	R(c, d, e, a, b, f1, K1, w[18]);
-	R(b, c, d, e, a, f1, K1, w[19]);
+	R(e, a, b, c, d, f1, K1, M(16));
+	R(d, e, a, b, c, f1, K1, M(17));
+	R(c, d, e, a, b, f1, K1, M(18));
+	R(b, c, d, e, a, f1, K1, M(19));
 
 	/* following unrolled from:
 	 *	for (i = 20; i < 40; i++) {
-	 *		t = f2(b, c, d) + K2 + rol32(a, 5) + e + w[i];
+	 *		t = f2(b, c, d) + K2 + rol32(a, 5) + e + M(i);
 	 *		e = d; d = c; c = rol32(b, 30); b = a; a = t;
 	 *	}
 	 */
 
-	R(a, b, c, d, e, f2, K2, w[20]);
-	R(e, a, b, c, d, f2, K2, w[21]);
-	R(d, e, a, b, c, f2, K2, w[22]);
-	R(c, d, e, a, b, f2, K2, w[23]);
-	R(b, c, d, e, a, f2, K2, w[24]);
-	R(a, b, c, d, e, f2, K2, w[25]);
-	R(e, a, b, c, d, f2, K2, w[26]);
-	R(d, e, a, b, c, f2, K2, w[27]);
-	R(c, d, e, a, b, f2, K2, w[28]);
-	R(b, c, d, e, a, f2, K2, w[29]);
-	R(a, b, c, d, e, f2, K2, w[30]);
-	R(e, a, b, c, d, f2, K2, w[31]);
-	R(d, e, a, b, c, f2, K2, w[32]);
-	R(c, d, e, a, b, f2, K2, w[33]);
-	R(b, c, d, e, a, f2, K2, w[34]);
-	R(a, b, c, d, e, f2, K2, w[35]);
-	R(e, a, b, c, d, f2, K2, w[36]);
-	R(d, e, a, b, c, f2, K2, w[37]);
-	R(c, d, e, a, b, f2, K2, w[38]);
-	R(b, c, d, e, a, f2, K2, w[39]);
+	R(a, b, c, d, e, f2, K2, M(20));
+	R(e, a, b, c, d, f2, K2, M(21));
+	R(d, e, a, b, c, f2, K2, M(22));
+	R(c, d, e, a, b, f2, K2, M(23));
+	R(b, c, d, e, a, f2, K2, M(24));
+	R(a, b, c, d, e, f2, K2, M(25));
+	R(e, a, b, c, d, f2, K2, M(26));
+	R(d, e, a, b, c, f2, K2, M(27));
+	R(c, d, e, a, b, f2, K2, M(28));
+	R(b, c, d, e, a, f2, K2, M(29));
+	R(a, b, c, d, e, f2, K2, M(30));
+	R(e, a, b, c, d, f2, K2, M(31));
+	R(d, e, a, b, c, f2, K2, M(32));
+	R(c, d, e, a, b, f2, K2, M(33));
+	R(b, c, d, e, a, f2, K2, M(34));
+	R(a, b, c, d, e, f2, K2, M(35));
+	R(e, a, b, c, d, f2, K2, M(36));
+	R(d, e, a, b, c, f2, K2, M(37));
+	R(c, d, e, a, b, f2, K2, M(38));
+	R(b, c, d, e, a, f2, K2, M(39));
 
 	/* following unrolled from:
 	 *	for (i = 40; i < 60; i++) {
-	 *		t = f3(b, c, d) + K3 + rol32(a, 5) + e + w[i];
+	 *		t = f3(b, c, d) + K3 + rol32(a, 5) + e + M(i);
 	 *		e = d; d = c; c = rol32(b, 30); b = a; a = t;
 	 *	}
 	 */
 
-	R(a, b, c, d, e, f3, K3, w[40]);
-	R(e, a, b, c, d, f3, K3, w[41]);
-	R(d, e, a, b, c, f3, K3, w[42]);
-	R(c, d, e, a, b, f3, K3, w[43]);
-	R(b, c, d, e, a, f3, K3, w[44]);
-	R(a, b, c, d, e, f3, K3, w[45]);
-	R(e, a, b, c, d, f3, K3, w[46]);
-	R(d, e, a, b, c, f3, K3, w[47]);
-	R(c, d, e, a, b, f3, K3, w[48]);
-	R(b, c, d, e, a, f3, K3, w[49]);
-	R(a, b, c, d, e, f3, K3, w[50]);
-	R(e, a, b, c, d, f3, K3, w[51]);
-	R(d, e, a, b, c, f3, K3, w[52]);
-	R(c, d, e, a, b, f3, K3, w[53]);
-	R(b, c, d, e, a, f3, K3, w[54]);
-	R(a, b, c, d, e, f3, K3, w[55]);
-	R(e, a, b, c, d, f3, K3, w[56]);
-	R(d, e, a, b, c, f3, K3, w[57]);
-	R(c, d, e, a, b, f3, K3, w[58]);
-	R(b, c, d, e, a, f3, K3, w[59]);
+	R(a, b, c, d, e, f3, K3, M(40));
+	R(e, a, b, c, d, f3, K3, M(41));
+	R(d, e, a, b, c, f3, K3, M(42));
+	R(c, d, e, a, b, f3, K3, M(43));
+	R(b, c, d, e, a, f3, K3, M(44));
+	R(a, b, c, d, e, f3, K3, M(45));
+	R(e, a, b, c, d, f3, K3, M(46));
+	R(d, e, a, b, c, f3, K3, M(47));
+	R(c, d, e, a, b, f3, K3, M(48));
+	R(b, c, d, e, a, f3, K3, M(49));
+	R(a, b, c, d, e, f3, K3, M(50));
+	R(e, a, b, c, d, f3, K3, M(51));
+	R(d, e, a, b, c, f3, K3, M(52));
+	R(c, d, e, a, b, f3, K3, M(53));
+	R(b, c, d, e, a, f3, K3, M(54));
+	R(a, b, c, d, e, f3, K3, M(55));
+	R(e, a, b, c, d, f3, K3, M(56));
+	R(d, e, a, b, c, f3, K3, M(57));
+	R(c, d, e, a, b, f3, K3, M(58));
+	R(b, c, d, e, a, f3, K3, M(59));
 
 	/* following unrolled from:
 	 *	for (i = 60; i < 80; i++) {
-	 *		t = f2(b, c, d) + K4 + rol32(a, 5) + e + w[i];
+	 *		t = f2(b, c, d) + K4 + rol32(a, 5) + e + M(i);
 	 *		e = d; d = c; c = rol32(b, 30); b = a; a = t;
 	 *	}
 	 */
-	R(a, b, c, d, e, f4, K4, w[60]);
-	R(e, a, b, c, d, f4, K4, w[61]);
-	R(d, e, a, b, c, f4, K4, w[62]);
-	R(c, d, e, a, b, f4, K4, w[63]);
-	R(b, c, d, e, a, f4, K4, w[64]);
-	R(a, b, c, d, e, f4, K4, w[65]);
-	R(e, a, b, c, d, f4, K4, w[66]);
-	R(d, e, a, b, c, f4, K4, w[67]);
-	R(c, d, e, a, b, f4, K4, w[68]);
-	R(b, c, d, e, a, f4, K4, w[69]);
-	R(a, b, c, d, e, f4, K4, w[70]);
-	R(e, a, b, c, d, f4, K4, w[71]);
-	R(d, e, a, b, c, f4, K4, w[72]);
-	R(c, d, e, a, b, f4, K4, w[73]);
-	R(b, c, d, e, a, f4, K4, w[74]);
-	R(a, b, c, d, e, f4, K4, w[75]);
-	R(e, a, b, c, d, f4, K4, w[76]);
-	R(d, e, a, b, c, f4, K4, w[77]);
-	R(c, d, e, a, b, f4, K4, w[78]);
-	R(b, c, d, e, a, f4, K4, w[79]);
+	R(a, b, c, d, e, f4, K4, M(60));
+	R(e, a, b, c, d, f4, K4, M(61));
+	R(d, e, a, b, c, f4, K4, M(62));
+	R(c, d, e, a, b, f4, K4, M(63));
+	R(b, c, d, e, a, f4, K4, M(64));
+	R(a, b, c, d, e, f4, K4, M(65));
+	R(e, a, b, c, d, f4, K4, M(66));
+	R(d, e, a, b, c, f4, K4, M(67));
+	R(c, d, e, a, b, f4, K4, M(68));
+	R(b, c, d, e, a, f4, K4, M(69));
+	R(a, b, c, d, e, f4, K4, M(70));
+	R(e, a, b, c, d, f4, K4, M(71));
+	R(d, e, a, b, c, f4, K4, M(72));
+	R(c, d, e, a, b, f4, K4, M(73));
+	R(b, c, d, e, a, f4, K4, M(74));
+	R(a, b, c, d, e, f4, K4, M(75));
+	R(e, a, b, c, d, f4, K4, M(76));
+	R(d, e, a, b, c, f4, K4, M(77));
+	R(c, d, e, a, b, f4, K4, M(78));
+	R(b, c, d, e, a, f4, K4, M(79));
 
 	h[0] += a;
 	h[1] += b;
