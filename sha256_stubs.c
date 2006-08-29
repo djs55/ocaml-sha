@@ -234,8 +234,6 @@ static inline int sha256_file(char *filename, sha256_digest *digest)
 	#undef BLKSIZE
 }
 
-#define CAML_BINDING
-#ifdef CAML_BINDING
 /* this part implement the OCaml binding */
 #include <caml/mlvalues.h>
 #include <caml/memory.h>
@@ -298,4 +296,3 @@ CAMLprim value stub_sha256_to_hex(value digest)
 
 	CAMLreturn(result);
 }
-#endif
