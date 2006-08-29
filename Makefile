@@ -46,4 +46,4 @@ sha.test: sha1.cmxa sha.test.cmx
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f *.o *.a *.cmo *.cmi *.cma *.cmx *.cmxa sha1.test sha1sum
+	rm -f *.o *.a *.cmo *.cmi *.cma *.cmx *.cmxa sha.test sha1sum
