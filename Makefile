@@ -28,7 +28,7 @@ sha256.cmxa: sha256.cmi sha256_stubs.o sha256.cmx
 tests: sha.test
 	./sha.test
 
-sha.test: sha1.cmxa sha.test.cmx
+sha.test: sha1.cmxa sha256.cmxa sha.test.cmx
 
 %.test:
 	$(OCAMLOPT) -o $@ $(OCAML_BFLAGS) unix.cmxa $(OCAML_TEST_INC) $(OCAML_TEST_LIB) $+
