@@ -189,12 +189,11 @@ static inline void sha1_do_chunk(unsigned int w[], unsigned int h[])
 /**
  * sha1_update - Update the SHA1 context values with length bytes of data
  */
-static void sha1_update(struct sha1_ctx *ctx, unsigned char *data,
-                        int ofs, int len)
+static void sha1_update(struct sha1_ctx *ctx, unsigned char *data, int len)
 {
 	int i;
 
-	i = ofs;
+	i = 0;
 	while (i < len) {
 		if ((ctx->len % 4 == 0) && (i + 4) < len) {
 			ctx->w[ctx->len / 4] = (((unsigned int) data[i]) << 24)
@@ -214,7 +213,7 @@ static void sha1_update(struct sha1_ctx *ctx, unsigned char *data,
 			ctx->len = 0;
 		}
 	}
-	ctx->sz += 8 * (len - ofs);
+	ctx->sz += 8 * len;
 }
 
 /**
@@ -240,10 +239,10 @@ static void sha1_finalize(struct sha1_ctx *ctx, sha1_digest *out)
 	padlen[6] = (unsigned char)((sz_low >> 8) & 255);
 	padlen[7] = (unsigned char)((sz_low >> 0) & 255);
 
-	sha1_update(ctx, &pad1, 0, 1);
+	sha1_update(ctx, &pad1, 1);
 	while (ctx->len != 56)
-		sha1_update(ctx, &pad0, 0, 1);
-	sha1_update(ctx, padlen, 0, 8);
+		sha1_update(ctx, &pad0, 1);
+	sha1_update(ctx, padlen, 8);
 
 	/* output hash */
 	out->digest[0] = cpu_to_be32(ctx->h[0]);
@@ -280,7 +279,7 @@ static inline int sha1_file(char *filename, sha1_digest *digest)
 		return 1;
 	sha1_init(&ctx);
 	while ((n = read(fd, buf, BLKSIZE)) > 0)
-		sha1_update(&ctx, buf, 0, n);
+		sha1_update(&ctx, buf, n);
 	if (n == 0)
 		sha1_finalize(&ctx, digest);
 	close(fd);
@@ -312,8 +311,8 @@ CAMLprim value stub_sha1_update(value ctx, value data, value ofs, value len)
 {
 	CAMLparam4(ctx, data, ofs, len);
 
-	sha1_update(GET_CTX_STRUCT(ctx), (unsigned char *) data,
-	            Int_val(ofs), Int_val(len));
+	sha1_update(GET_CTX_STRUCT(ctx), (unsigned char *) data + Int_val(ofs),
+	            Int_val(len));
 
 	CAMLreturn(Val_unit);
 }
