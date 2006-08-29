@@ -15,11 +15,11 @@
 
 open Printf
 
-let printfct file =
-	let digest = Sha1.file file in
-	printf "%s  %s\n" (Sha1.to_hex digest) file
+let printfct get_digest file =
+	let digest = get_digest file in
+	printf "%s  %s\n" digest file
 
-let checkfct file =
+let checkfct get_digest file =
 	let chan = open_in file in
 
 	let nb = ref 0 and failed = ref 0 in
@@ -27,8 +27,8 @@ let checkfct file =
 	do
 		let line = input_line chan in
 		Scanf.sscanf line "%s %s" (fun hex file ->
-			let digest = Sha1.file file in
-			let fail = Sha1.to_hex digest <> hex in
+			let digest = get_digest file in
+			let fail = digest <> hex in
 			if fail then
 				incr failed;
 			incr nb;
@@ -67,6 +67,14 @@ let _ =
 					files := opt :: !files
 	done;
 
+	let sha1 file = Sha1.to_hex (Sha1.file file) in
+	let sha256 file = Sha256.to_hex (Sha256.file file) in
+
+	let sha = match Filename.basename Sys.argv.(0) with
+		| "sha256sum" -> sha256
+		| "sha1sum"   -> sha1
+		| _           -> sha1 in
+
 	(* apply function of every file *)
-	List.iter (fun file -> (if !check then checkfct else printfct) file)
+	List.iter (fun file -> (if !check then checkfct else printfct) sha file)
 	          (List.rev !files)
