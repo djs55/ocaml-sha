@@ -1,4 +1,4 @@
-/**
+/*
  *	Copyright (C) 2006 Vincent Hanquez <tab@snarc.org>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,6 +16,7 @@
 /* this part implement the C part of the algorithm */
 #include <string.h>
 #include <stdio.h>
+#include "op.h"
 
 struct sha1_ctx
 {
@@ -40,11 +41,6 @@ static void sha1_init(struct sha1_ctx *ctx)
 	ctx->h[2] = 0x98BADCFE;
 	ctx->h[3] = 0x10325476;
 	ctx->h[4] = 0xC3D2E1F0;
-}
-
-static inline unsigned int rol32(unsigned int word, unsigned int shift)
-{
-        return (word << shift) | (word >> (32 - shift));
 }
 
 #define f1(x, y, z)   (z ^ (x & (y ^ z)))         /* x ? y : z */
