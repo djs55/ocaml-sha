@@ -26,7 +26,7 @@ struct sha1_ctx
 	unsigned long long sz;
 };
 
-typedef struct { unsigned char digest[20]; } sha1_digest;
+typedef struct { unsigned int digest[5]; } sha1_digest;
 
 /**
  * sha1_init - Init SHA1 context
@@ -226,7 +226,6 @@ static void sha1_finalize(struct sha1_ctx *ctx, sha1_digest *out)
 	unsigned char pad0 = 0x00;
 	unsigned char padlen[8];
 	unsigned int sz_high, sz_low;
-	int i;
 
 	sz_high = (unsigned int) (ctx->sz >> 32);
 	sz_low = (unsigned int) (ctx->sz);
@@ -247,10 +246,11 @@ static void sha1_finalize(struct sha1_ctx *ctx, sha1_digest *out)
 	sha1_update(ctx, padlen, 0, 8);
 
 	/* output hash */
-	for (i = 0; i < 20; i++) {
-		out->digest[i] = (unsigned char)(ctx->h[i / 4] >> 24);
-		ctx->h[i / 4] <<= 8;
-	}
+	out->digest[0] = cpu_to_be32(ctx->h[0]);
+	out->digest[1] = cpu_to_be32(ctx->h[1]);
+	out->digest[2] = cpu_to_be32(ctx->h[2]);
+	out->digest[3] = cpu_to_be32(ctx->h[3]);
+	out->digest[4] = cpu_to_be32(ctx->h[4]);
 }
 
 /**
@@ -258,12 +258,10 @@ static void sha1_finalize(struct sha1_ctx *ctx, sha1_digest *out)
  */
 static inline void sha1_to_hex(sha1_digest *digest, char *out)
 {
-	#define D(i) digest->digest[i]
-	snprintf(out, 41, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
-	                  "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-	         D(0), D(1), D(2), D(3), D(4), D(5), D(6), D(7), D(8), D(9),
-	         D(10), D(11), D(12), D(13), D(14), D(15), D(16), D(17), D(18),
-	         D(19));
+
+	#define D(i) (cpu_to_be32(digest->digest[i]))
+	snprintf(out, 41, "%08x%08x%08x%08x%08x",
+		D(0), D(1), D(2), D(3), D(4));
 	#undef D
 }
 
