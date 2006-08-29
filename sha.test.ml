@@ -37,7 +37,7 @@ let test_file _ =
 
 let test_channel _ =
 	let v = "e13052afa4916d56994378f847f157596f9638a2" in
-	let chan = open_in_bin "sha1.test.ml" in
+	let chan = open_in_bin "sha.test.ml" in
 	let digest = Sha1.channel chan 20 in
 	close_in chan;
 	assert_equal v (Sha1.to_hex digest)
