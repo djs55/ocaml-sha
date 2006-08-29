@@ -223,26 +223,16 @@ static void sha1_finalize(struct sha1_ctx *ctx, sha1_digest *out)
 {
 	unsigned char pad1 = 0x80;
 	unsigned char pad0 = 0x00;
-	unsigned char padlen[8];
-	unsigned int sz_high, sz_low;
-
-	sz_high = (unsigned int) (ctx->sz >> 32);
-	sz_low = (unsigned int) (ctx->sz);
+	unsigned int padlen[2];
 
 	/* add padding and update data with it */
-	padlen[0] = (unsigned char)((sz_high >> 24) & 255);
-	padlen[1] = (unsigned char)((sz_high >> 16) & 255);
-	padlen[2] = (unsigned char)((sz_high >> 8) & 255);
-	padlen[3] = (unsigned char)((sz_high >> 0) & 255);
-	padlen[4] = (unsigned char)((sz_low >> 24) & 255);
-	padlen[5] = (unsigned char)((sz_low >> 16) & 255);
-	padlen[6] = (unsigned char)((sz_low >> 8) & 255);
-	padlen[7] = (unsigned char)((sz_low >> 0) & 255);
+	padlen[0] = cpu_to_be32((unsigned int) (ctx->sz >> 32));
+	padlen[1] = cpu_to_be32((unsigned int) ctx->sz);
 
 	sha1_update(ctx, &pad1, 1);
 	while (ctx->len != 56)
 		sha1_update(ctx, &pad0, 1);
-	sha1_update(ctx, padlen, 8);
+	sha1_update(ctx, (unsigned char *) padlen, sizeof(padlen));
 
 	/* output hash */
 	out->digest[0] = cpu_to_be32(ctx->h[0]);
