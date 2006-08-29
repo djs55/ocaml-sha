@@ -26,10 +26,18 @@ static inline unsigned int ror32(unsigned int word, unsigned int shift)
 	return (word >> shift) | (word << (32 - shift));
 }
 
+#if defined(__i386__) && !defined(NO_INLINE_ASM)
+static inline unsigned int swap32(unsigned int a)
+{
+	asm ("bswap %0" : "=r" (a) : "0" (a));
+	return a;
+}
+#else
 static inline unsigned int swap32(unsigned int a)
 {
 	return (a << 24) | ((a & 0xff00) << 8) | ((a >> 8) & 0xff00) | (a >> 24);
 }
+#endif
 
 /* big endian to cpu */
 #include <endian.h>
