@@ -8,7 +8,7 @@ OCAMLOPTFLAGS =
 OCAML_TEST_INC = -I `ocamlfind query oUnit`
 OCAML_TEST_LIB = `ocamlfind query oUnit`/oUnit.cmxa
 
-all: sha1.cmi sha1.cma sha1.cmxa
+all: sha1.cmi sha1.cma sha1.cmxa sha256.cma sha256.cmxa
 
 sha1sum: sha1.cmxa shasum.cmx
 	$(OCAMLOPT) $(OCAMLOPTFLAGS) -o $@ $+
@@ -18,6 +18,12 @@ sha1.cma: sha1.cmi sha1_stubs.o sha1.cmo
 
 sha1.cmxa: sha1.cmi sha1_stubs.o sha1.cmx
 	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ sha1_stubs.o sha1.cmx
+
+sha256.cma: sha256.cmi sha256_stubs.o sha256.cmo
+	$(OCAMLC) -a -o $@ -custom sha256_stubs.o sha256.cmo
+
+sha256.cmxa: sha256.cmi sha256_stubs.o sha256.cmx
+	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ sha256_stubs.o sha256.cmx
 
 tests: sha.test
 	./sha.test
