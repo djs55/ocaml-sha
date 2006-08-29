@@ -76,5 +76,10 @@ let _ =
 		| _           -> sha1 in
 
 	(* apply function of every file *)
-	List.iter (fun file -> (if !check then checkfct else printfct) sha file)
+	List.iter (fun file ->
+		try
+			(if !check then checkfct else printfct) sha file
+		with
+			exn -> eprintf "error: %s: %s\n" file
+			               (Printexc.to_string exn))
 	          (List.rev !files)
