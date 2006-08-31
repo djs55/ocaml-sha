@@ -178,13 +178,10 @@ static void sha256_finalize(struct sha256_ctx *ctx, sha256_digest *out)
 	static unsigned char padding[64] = { 0x80, };
 	unsigned int bits[2];
 	unsigned int i, index, padlen;
-	unsigned int high, low;
 
 	/* cpu -> big endian */
-	high = (unsigned int) (ctx->sz >> 32);
-	low = (unsigned int) (ctx->sz & 0xffffffff);
-	bits[0] = cpu_to_be32((low >> 29) | (high << 3));
-	bits[1] = cpu_to_be32(low << 3);
+	bits[0] = cpu_to_be32((unsigned int) (ctx->sz >> 29));
+	bits[1] = cpu_to_be32((unsigned int) (ctx->sz << 3));
 
 	/* pad out to 56 */
 	index = (unsigned int) (ctx->sz & 0x3f);
