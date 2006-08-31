@@ -26,7 +26,7 @@ static inline unsigned int ror32(unsigned int word, unsigned int shift)
 	return (word >> shift) | (word << (32 - shift));
 }
 
-#if defined(__i386__) && !defined(NO_INLINE_ASM)
+#if defined(__i386__) && defined(__x86_64__) && !defined(NO_INLINE_ASM)
 static inline unsigned int swap32(unsigned int a)
 {
 	asm ("bswap %0" : "=r" (a) : "0" (a));
