@@ -22,7 +22,6 @@ struct sha1_ctx
 {
 	unsigned int h[5];
 	unsigned char buf[64];
-	int len;
 	unsigned long long sz;
 };
 
@@ -211,7 +210,6 @@ static void sha1_update(struct sha1_ctx *ctx, unsigned char *data, int len)
 		len -= to_fill;
 		data += to_fill;
 		index = 0;
-		ctx->len = 0;
 	}
 
 	/* process as much 64-block as possible */
@@ -219,10 +217,8 @@ static void sha1_update(struct sha1_ctx *ctx, unsigned char *data, int len)
 		sha1_do_chunk(data, ctx->h);
 
 	/* append data into buf */
-	if (len) {
+	if (len)
 		memcpy(ctx->buf + index, data, len);
-		ctx->len = index + len;
-	}
 }
 
 /**
@@ -230,18 +226,21 @@ static void sha1_update(struct sha1_ctx *ctx, unsigned char *data, int len)
  */
 static void sha1_finalize(struct sha1_ctx *ctx, sha1_digest *out)
 {
-	unsigned char pad1 = 0x80;
-	unsigned char pad0 = 0x00;
-	unsigned int padlen[2];
+	static unsigned char padding[64] = { 0x80, };
+	unsigned int bits[2];
+	unsigned int index, padlen;
 
 	/* add padding and update data with it */
-	padlen[0] = cpu_to_be32((unsigned int) (ctx->sz >> 32));
-	padlen[1] = cpu_to_be32((unsigned int) ctx->sz);
+	bits[0] = cpu_to_be32((unsigned int) (ctx->sz >> 32));
+	bits[1] = cpu_to_be32((unsigned int) ctx->sz);
 
-	sha1_update(ctx, &pad1, 1);
-	while (ctx->len != 56)
-		sha1_update(ctx, &pad0, 1);
-	sha1_update(ctx, (unsigned char *) padlen, sizeof(padlen));
+	/* pad out to 56 */
+	index = (unsigned int) ((ctx->sz >> 3) & 0x3f);
+	padlen = (index < 56) ? (56 - index) : ((64 + 56) - index);
+	sha1_update(ctx, padding, padlen);
+
+	/* append length */
+	sha1_update(ctx, (unsigned char *) bits, sizeof(bits));
 
 	/* output hash */
 	out->digest[0] = cpu_to_be32(ctx->h[0]);
