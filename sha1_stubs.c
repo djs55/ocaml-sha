@@ -198,10 +198,10 @@ static void sha1_update(struct sha1_ctx *ctx, unsigned char *data, int len)
 {
 	unsigned int index, to_fill;
 
-	index = (unsigned int) ((ctx->sz >> 3) & 0x3f);
+	index = (unsigned int) (ctx->sz & 0x3f);
 	to_fill = 64 - index;
 
-	ctx->sz += 8 * len;
+	ctx->sz += len;
 
 	/* process partial buffer if there's enough data to make a block */
 	if (index && len >= to_fill) {
@@ -231,11 +231,11 @@ static void sha1_finalize(struct sha1_ctx *ctx, sha1_digest *out)
 	unsigned int index, padlen;
 
 	/* add padding and update data with it */
-	bits[0] = cpu_to_be32((unsigned int) (ctx->sz >> 32));
-	bits[1] = cpu_to_be32((unsigned int) ctx->sz);
+	bits[0] = cpu_to_be32((unsigned int) (ctx->sz >> 29));
+	bits[1] = cpu_to_be32((unsigned int) (ctx->sz << 3));
 
 	/* pad out to 56 */
-	index = (unsigned int) ((ctx->sz >> 3) & 0x3f);
+	index = (unsigned int) (ctx->sz & 0x3f);
 	padlen = (index < 56) ? (56 - index) : ((64 + 56) - index);
 	sha1_update(ctx, padding, padlen);
 
