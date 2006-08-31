@@ -21,7 +21,7 @@
 struct sha1_ctx
 {
 	unsigned int h[5];
-	unsigned int w[80];
+	unsigned char buf[64];
 	int len;
 	unsigned long long sz;
 };
@@ -59,9 +59,15 @@ static void sha1_init(struct sha1_ctx *ctx)
 #define M(i)  (w[i & 0x0f] = rol32(w[i & 0x0f] ^ w[(i - 14) & 0x0f] \
               ^ w[(i - 8) & 0x0f] ^ w[(i - 3) & 0x0f], 1))
 
-static inline void sha1_do_chunk(unsigned int w[], unsigned int h[])
+static inline void sha1_do_chunk(unsigned char W[], unsigned int h[])
 {
 	unsigned int a, b, c, d, e;
+	unsigned int w[80];
+
+	#define CPY(i)	w[i] = be32_to_cpu(((unsigned int *) W)[i])
+	CPY(0); CPY(1); CPY(2); CPY(3); CPY(4); CPY(5); CPY(6); CPY(7);
+	CPY(8); CPY(9); CPY(10); CPY(11); CPY(12); CPY(13); CPY(14); CPY(15);
+	#undef CPY
 
 	a = h[0];
 	b = h[1];
@@ -191,29 +197,32 @@ static inline void sha1_do_chunk(unsigned int w[], unsigned int h[])
  */
 static void sha1_update(struct sha1_ctx *ctx, unsigned char *data, int len)
 {
-	int i;
+	unsigned int index, to_fill;
 
-	i = 0;
-	while (i < len) {
-		if ((ctx->len % 4 == 0) && (i + 4) < len) {
-			ctx->w[ctx->len / 4] = (((unsigned int) data[i]) << 24)
-			                 | (((unsigned int) data[i + 1]) << 16)
-			                 | (((unsigned int) data[i + 2]) << 8)
-			                 | ((unsigned int) data[i + 3]);
-			ctx->len += 4;
-			i += 4;
-		} else {
-			ctx->w[ctx->len / 4] <<= 8;
-			ctx->w[ctx->len / 4] |= (unsigned int) data[i];
-			ctx->len += 1;
-			i++;
-		}
-		if ((ctx->len % 64) == 0) {
-			sha1_do_chunk(ctx->w, ctx->h);
-			ctx->len = 0;
-		}
-	}
+	index = (unsigned int) ((ctx->sz >> 3) & 0x3f);
+	to_fill = 64 - index;
+
 	ctx->sz += 8 * len;
+
+	/* process partial buffer if there's enough data to make a block */
+	if (index && len >= to_fill) {
+		memcpy(ctx->buf + index, data, to_fill);
+		sha1_do_chunk(ctx->buf, ctx->h);
+		len -= to_fill;
+		data += to_fill;
+		index = 0;
+		ctx->len = 0;
+	}
+
+	/* process as much 64-block as possible */
+	for (; len >= 64; len -= 64, data += 64)
+		sha1_do_chunk(data, ctx->h);
+
+	/* append data into buf */
+	if (len) {
+		memcpy(ctx->buf + index, data, len);
+		ctx->len = index + len;
+	}
 }
 
 /**
