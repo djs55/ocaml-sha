@@ -69,8 +69,10 @@ let _ =
 
 	let sha1 file = Sha1.to_hex (Sha1.file file) in
 	let sha256 file = Sha256.to_hex (Sha256.file file) in
+	let sha512 file = Sha512.to_hex (Sha512.file file) in
 
 	let sha = match Filename.basename Sys.argv.(0) with
+		| "sha512sum" -> sha512
 		| "sha256sum" -> sha256
 		| "sha1sum"   -> sha1
 		| _           -> sha1 in

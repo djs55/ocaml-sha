@@ -8,14 +8,19 @@ OCAMLOPTFLAGS =
 OCAML_TEST_INC = -I `ocamlfind query oUnit`
 OCAML_TEST_LIB = `ocamlfind query oUnit`/oUnit.cmxa
 
-all: sha1.cmi sha1.cma sha1.cmxa sha256.cma sha256.cmxa
+PROGRAMS = sha1sum sha256sum sha512sum
 
-bins: sha1sum sha256sum
+all: sha1.cmi sha1.cma sha1.cmxa sha256.cma sha256.cmxa sha512.cma sha512.cmxa
 
-sha1sum: sha1.cmxa sha256.cmxa shasum.cmx
+bins: $(PROGRAMS)
+
+sha1sum: sha1.cmxa sha256.cmxa sha512.cmxa shasum.cmx
 	$(OCAMLOPT) $(OCAMLOPTFLAGS) -o $@ $+
 
 sha256sum: sha1sum
+	cp $< $@
+
+sha512sum: sha1sum
 	cp $< $@
 
 sha1.cma: sha1.cmi sha1_stubs.o sha1.cmo
@@ -30,10 +35,16 @@ sha256.cma: sha256.cmi sha256_stubs.o sha256.cmo
 sha256.cmxa: sha256.cmi sha256_stubs.o sha256.cmx
 	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ sha256_stubs.o sha256.cmx
 
+sha512.cma: sha512.cmi sha512_stubs.o sha512.cmo
+	$(OCAMLC) -a -o $@ -custom sha512_stubs.o sha512.cmo
+
+sha512.cmxa: sha512.cmi sha512_stubs.o sha512.cmx
+	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ sha512_stubs.o sha512.cmx
+
 tests: sha.test
 	./sha.test
 
-sha.test: sha1.cmxa sha256.cmxa sha.test.cmx
+sha.test: sha1.cmxa sha256.cmxa sha512.cmxa sha.test.cmx
 
 %.test:
 	$(OCAMLOPT) -o $@ $(OCAML_BFLAGS) unix.cmxa $(OCAML_TEST_INC) $(OCAML_TEST_LIB) $+
@@ -57,4 +68,4 @@ sha.test: sha1.cmxa sha256.cmxa sha.test.cmx
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f *.o *.a *.cmo *.cmi *.cma *.cmx *.cmxa sha.test sha1sum sha256sum
+	rm -f *.o *.a *.cmo *.cmi *.cma *.cmx *.cmxa sha.test $(PROGRAMS)

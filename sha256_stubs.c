@@ -74,7 +74,7 @@ static inline unsigned int Maj(unsigned int x, unsigned int y, unsigned int z)
 #define s1(x)       (ror32(x,17) ^ ror32(x,19) ^ (x >> 10))
 
 /**
- * sha256_do_block - Process a block through SHA256
+ * sha256_do_chunk - Process a block through SHA256
  */
 static void sha256_do_chunk(unsigned char __W[], unsigned int H[])
 {
