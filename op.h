@@ -52,7 +52,7 @@ static inline unsigned int swap32(unsigned int a)
 }
 #endif
 
-#if && defined(__x86_64__) && !defined(NO_INLINE_ASM)
+#if defined(__x86_64__) && !defined(NO_INLINE_ASM)
 static inline u64 swap64(u64 a)
 {
 	asm ("bswap %0" : "=r" (a) : "0" (a));
