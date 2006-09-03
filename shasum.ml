@@ -77,11 +77,12 @@ let _ =
 		| "sha1sum"   -> sha1
 		| _           -> sha1 in
 
-	(* apply function of every file *)
-	List.iter (fun file ->
+	let execfct_with_catch file =
 		try
 			(if !check then checkfct else printfct) sha file
 		with
 			exn -> eprintf "error: %s: %s\n" file
-			               (Printexc.to_string exn))
-	          (List.rev !files)
+			               (Printexc.to_string exn) in
+
+	(* apply function on every file *)
+	List.iter (fun file -> execfct_with_catch file) (List.rev !files)
