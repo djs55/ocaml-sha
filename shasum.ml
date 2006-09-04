@@ -67,6 +67,7 @@ let _ =
 					files := opt :: !files
 	done;
 
+	let md5 file = Digest.to_hex (Digest.file file) in
 	let sha1 file = Sha1.to_hex (Sha1.file file) in
 	let sha256 file = Sha256.to_hex (Sha256.file file) in
 	let sha512 file = Sha512.to_hex (Sha512.file file) in
@@ -75,6 +76,7 @@ let _ =
 		| "sha512sum" -> sha512
 		| "sha256sum" -> sha256
 		| "sha1sum"   -> sha1
+		| "md5sum"    -> md5
 		| _           -> sha1 in
 
 	let execfct_with_catch file =
