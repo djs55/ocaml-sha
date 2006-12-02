@@ -23,10 +23,10 @@ sha256sum: sha1sum
 sha512sum: sha1sum
 	cp $< $@
 
-sha1.cma: sha1.cmi sha1_stubs.o sha1.cmo
+sha1.cma: sha.cmo sha1.cmi sha1_stubs.o sha1.cmo
 	$(OCAMLC) -a -o $@ -custom sha1_stubs.o sha1.cmo
 
-sha1.cmxa: sha1.cmi sha1_stubs.o sha1.cmx
+sha1.cmxa: sha.cmx sha1.cmi sha1_stubs.o sha1.cmx
 	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ sha1_stubs.o sha1.cmx
 
 sha256.cma: sha256.cmi sha256_stubs.o sha256.cmo
