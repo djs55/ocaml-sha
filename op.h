@@ -15,9 +15,7 @@
 
 #ifndef SHA_OP_H
 #define SHA_OP_H
-
-typedef unsigned long long u64;
-
+#include <stdint.h>
 
 static inline unsigned int rol32(unsigned int word, unsigned int shift)
 {
@@ -29,12 +27,12 @@ static inline unsigned int ror32(unsigned int word, unsigned int shift)
 	return (word >> shift) | (word << (32 - shift));
 }
 
-static inline u64 rol64(u64 word, unsigned int shift)
+static inline uint64_t rol64(uint64_t word, unsigned int shift)
 {
         return (word << shift) | (word >> (64 - shift));
 }
 
-static inline u64 ror64(u64 word, unsigned int shift)
+static inline uint64_t ror64(uint64_t word, unsigned int shift)
 {
 	return (word >> shift) | (word << (64 - shift));
 }
@@ -53,16 +51,16 @@ static inline unsigned int swap32(unsigned int a)
 #endif
 
 #if defined(__x86_64__) && !defined(NO_INLINE_ASM)
-static inline u64 swap64(u64 a)
+static inline uint64_t swap64(uint64_t a)
 {
 	asm ("bswap %0" : "=r" (a) : "0" (a));
 	return a;
 }
 #else
-static inline u64 swap64(u64 a)
+static inline uint64_t swap64(uint64_t a)
 {
-	return ((u64) swap32((unsigned int) (a >> 32))) |
-	       (((u64) swap32((unsigned int) a)) << 32);
+	return ((uint64_t) swap32((unsigned int) (a >> 32))) |
+	       (((uint64_t) swap32((unsigned int) a)) << 32);
 }
 #endif
 

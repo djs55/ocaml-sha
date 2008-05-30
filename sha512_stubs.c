@@ -20,12 +20,12 @@
 
 struct sha512_ctx
 {
-	u64 h[8];
+	uint64_t h[8];
 	unsigned char buf[128];
-	u64 sz[2];
+	uint64_t sz[2];
 };
 
-typedef struct { u64 digest[8]; } sha512_digest;
+typedef struct { uint64_t digest[8]; } sha512_digest;
 
 /**
  * sha512_init - Init SHA512 context
@@ -45,7 +45,7 @@ static void sha512_init(struct sha512_ctx *ctx)
 }
 
 /* 232 times the cube root of the first 64 primes 2..311 */
-static const u64 k[] = {
+static const uint64_t k[] = {
 	0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL, 0xb5c0fbcfec4d3b2fULL,
 	0xe9b5dba58189dbbcULL, 0x3956c25bf348b538ULL, 0x59f111f1b605d019ULL,
 	0x923f82a4af194f9bULL, 0xab1c5ed5da6d8118ULL, 0xd807aa98a3030242ULL,
@@ -75,12 +75,12 @@ static const u64 k[] = {
 	0x5fcb6fab3ad6faecULL, 0x6c44198c4a475817ULL,
 };
 
-static inline u64 Ch(u64 x, u64 y, u64 z)
+static inline uint64_t Ch(uint64_t x, uint64_t y, uint64_t z)
 {
 	return z ^ (x & (y ^ z));
 }
 
-static inline u64 Maj(u64 x, u64 y, u64 z)
+static inline uint64_t Maj(uint64_t x, uint64_t y, uint64_t z)
 {
 	return (x & y) | (z & (x | y));
 }
@@ -93,14 +93,14 @@ static inline u64 Maj(u64 x, u64 y, u64 z)
 /**
  * sha512_do_chunk - Process a block through SHA512
  */
-static void sha512_do_chunk(unsigned char __W[], u64 H[])
+static void sha512_do_chunk(unsigned char __W[], uint64_t H[])
 {
-	u64 a, b, c, d, e, f, g, h, t1, t2;
-	u64 W[80];
+	uint64_t a, b, c, d, e, f, g, h, t1, t2;
+	uint64_t W[80];
 	int i;
 
 	for (i = 0; i < 16; i++)
-		W[i] = be64_to_cpu(((u64 *) __W)[i]);
+		W[i] = be64_to_cpu(((uint64_t *) __W)[i]);
 
 	for (i = 16; i < 80; i++)
 		W[i] = s1(W[i - 2]) + W[i - 7] + s0(W[i - 15]) + W[i - 16];
@@ -198,7 +198,7 @@ static void sha512_finalize(struct sha512_ctx *ctx, sha512_digest *out)
 {
 	static unsigned char padding[128] = { 0x80, };
 	unsigned int i, index, padlen;
-	u64 bits[2];
+	uint64_t bits[2];
 
 	/* cpu -> big endian */
 	bits[0] = cpu_to_be64((ctx->sz[1] << 3 | ctx->sz[0] >> 61));
@@ -226,7 +226,8 @@ static inline void sha512_to_hex(sha512_digest *digest, char *out)
 	int i;
 
 	for (p = out, i = 0; i < 8; i++, p += 16)
-		snprintf(p, 17, "%016llx", be64_to_cpu(digest->digest[i]));
+		snprintf(p, 17, "%016llx",
+		         (unsigned long long) be64_to_cpu(digest->digest[i]));
 }
 
 #include <unistd.h>
