@@ -13,8 +13,8 @@
  * SHA implementation low level operation
  */
 
-#ifndef SHA_OP_H
-#define SHA_OP_H
+#ifndef BITFN_H
+#define BITFN_H
 #include <stdint.h>
 
 static inline unsigned int rol32(unsigned int word, unsigned int shift)
@@ -80,4 +80,4 @@ static inline uint64_t swap64(uint64_t a)
 #error "endian not supported"
 #endif
 
-#endif /* !SHA_OP_H */
+#endif /* !BITFN_H */

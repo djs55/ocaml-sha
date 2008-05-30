@@ -15,7 +15,7 @@
 
 #include <string.h>
 #include <stdio.h>
-#include "op.h"
+#include "bitfn.h"
 #include "sha256.h"
 
 

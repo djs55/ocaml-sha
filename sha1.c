@@ -16,7 +16,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "sha1.h"
-#include "op.h"
+#include "bitfn.h"
 
 /**
  * sha1_init - Init SHA1 context
