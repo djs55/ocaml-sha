@@ -2,6 +2,8 @@ CC = gcc
 CFLAGS = -Wall -O3 -funroll-loops
 OCAMLC = ocamlc
 OCAMLOPT = ocamlopt
+OCAML_PATH = $(shell $(OCAMLC) -where)
+CFLAGS += -I $(OCAML_PATH)
 
 OCAMLOPTFLAGS =
 
