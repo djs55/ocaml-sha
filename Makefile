@@ -15,7 +15,7 @@ all: sha1.cmi sha1.cma sha1.cmxa sha256.cma sha256.cmxa sha512.cma sha512.cmxa
 bins: $(PROGRAMS)
 
 sha1sum: shacommon.cmx sha1.cmxa sha256.cmxa sha512.cmxa shasum.cmx
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -o $@ $+
+	$(OCAMLOPT) $(OCAMLOPTFLAGS) -o $@ -cclib -L. $+
 
 sha256sum: sha1sum
 	cp $< $@

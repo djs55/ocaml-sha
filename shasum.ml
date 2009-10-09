@@ -72,7 +72,7 @@ let _ =
 	let sha256 file = Sha256.to_hex (Sha256.file file) in
 	let sha512 file = Sha512.to_hex (Sha512.file file) in
 
-	let basemane = Filename.basename Sys.argv.(0) in
+	let basename = Filename.basename Sys.argv.(0) in
 	let prog =
 		if Sys.os_type = "Win32" then
 			try Filename.chop_extension basename
