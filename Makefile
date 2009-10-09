@@ -1,9 +1,7 @@
-CC = gcc
-CFLAGS = -Wall -O3 -funroll-loops
+CFLAGS = -Wall -O3 -funroll-loops -I/usr/include
 OCAMLC = ocamlc
 OCAMLOPT = ocamlopt
-OCAML_PATH = $(shell $(OCAMLC) -where)
-CFLAGS += -I $(OCAML_PATH)
+OCAMLMKLIB = ocamlmklib
 
 OCAMLOPTFLAGS =
 
@@ -67,10 +65,10 @@ sha.test: sha1.cmxa sha256.cmxa sha512.cmxa sha.test.cmx
 	$(OCAMLOPT) $(OCAMLOPTFLAGS) -c -o $@ $<
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(OCAMLC) -ccopt "$(CFLAGS)" -c -o $@ $<
 
 %.lib.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(OCAMLC) -ccopt "$(CFLAGS)" -c -o $@ $<
 
 clean:
 	rm -f *.o *.a *.cmo *.cmi *.cma *.cmx *.cmxa sha.test $(PROGRAMS)
