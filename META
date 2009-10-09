@@ -1,7 +1,7 @@
-description="OCaml SHA-1 and SHA-2 implementations"
+description="OCaml SHA-1 and SHA-2 family implementations"
 version="1.6"
-archive(byte)="ocamlsha.cma"
-archive(native)="ocamlsha.cmxa"
+archive(byte)="sha.cma"
+archive(native)="sha.cmxa"
 
 package "sha1" (
   description="OCamlSHA SHA-1 Implementation"
