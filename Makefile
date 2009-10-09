@@ -24,22 +24,22 @@ sha512sum: sha1sum
 	cp $< $@
 
 sha1.cma: shacommon.cmo sha1.cmi sha1.lib.o sha1_stubs.o sha1.cmo
-	$(OCAMLC) -a -o $@ -custom sha1.lib.o sha1_stubs.o sha1.cmo
+	$(OCAMLMKLIB) -o sha1 sha1.lib.o sha1_stubs.o sha1.cmo
 
 sha1.cmxa: shacommon.cmx sha1.cmi sha1.lib.o sha1_stubs.o sha1.cmx
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ sha1.lib.o sha1_stubs.o sha1.cmx
+	$(OCAMLMKLIB) -o sha1 sha1.lib.o sha1_stubs.o sha1.cmx
 
 sha256.cma: shacommon.cmo sha256.cmi sha256.lib.o sha256_stubs.o sha256.cmo
-	$(OCAMLC) -a -o $@ -custom sha256.lib.o sha256_stubs.o sha256.cmo
+	$(OCAMLMKLIB) -o sha256 sha256.lib.o sha256_stubs.o sha256.cmo
 
 sha256.cmxa: shacommon.cmx sha256.cmi sha256.lib.o sha256_stubs.o sha256.cmx
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ sha256.lib.o sha256_stubs.o sha256.cmx
+	$(OCAMLMKLIB) -o sha256 sha256.lib.o sha256_stubs.o sha256.cmx
 
 sha512.cma: shacommon.cmo sha512.cmi sha512.lib.o sha512_stubs.o sha512.cmo
-	$(OCAMLC) -a -o $@ -custom sha512.lib.o sha512_stubs.o sha512.cmo
+	$(OCAMLMKLIB) -o sha512 sha512.lib.o sha512_stubs.o sha512.cmo
 
 sha512.cmxa: shacommon.cmx sha512.cmi sha512.lib.o sha512_stubs.o sha512.cmx
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ sha512.lib.o sha512_stubs.o sha512.cmx
+	$(OCAMLMKLIB) -o sha512 sha512.lib.o sha512_stubs.o sha512.cmx
 
 tests: sha.test
 	./sha.test
@@ -67,8 +67,8 @@ sha.test: sha1.cmxa sha256.cmxa sha512.cmxa sha.test.cmx
 %.o: %.c
 	$(OCAMLC) -ccopt "$(CFLAGS)" -c -o $@ $<
 
-%.lib.o: %.c
-	$(OCAMLC) -ccopt "$(CFLAGS)" -c -o $@ $<
+%.lib.o: %.o
+	mv $< $@
 
 clean:
 	rm -f *.o *.a *.cmo *.cmi *.cma *.cmx *.cmxa sha.test $(PROGRAMS)
