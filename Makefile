@@ -79,5 +79,13 @@ sha.test: sha1.cmxa sha256.cmxa sha512.cmxa sha.test.cmx
 %.lib.o: %.o
 	mv $< $@
 
+.PHONY: clean
 clean:
 	rm -f *.o *.a *.cmo *.cmi *.cma *.cmx *.cmxa sha.test $(PROGRAMS)
+
+.PHONY: install uninstall
+install: sha1.cma sha1.cmxa sha256.cma sha256.cmxa sha512.cma sha512.cmxa sha.cma sha.cmxa META
+	ocamlfind install sha META *.cmx sha1.cmi sha1.cma sha1.cmxa sha256.cmi sha256.cma sha256.cmxa sha512.cmi sha512.cma sha512.cmxa sha.cma sha.cmxa *.a *.so
+
+uninstall:
+	ocamlfind remove sha
