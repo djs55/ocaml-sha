@@ -25,4 +25,4 @@ external file_fast: string -> t = "stub_sha1_file"
 
 end
 
-include Sha.Sha(Sha1ops)
+include Shacommon.Sha(Sha1ops)

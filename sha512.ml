@@ -24,4 +24,4 @@ external to_hex: t -> string = "stub_sha512_to_hex"
 external file_fast: string -> t = "stub_sha512_file"
 end
 
-include Sha.Sha(Sha512ops)
+include Shacommon.Sha(Sha512ops)
