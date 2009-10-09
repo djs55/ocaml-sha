@@ -10,7 +10,10 @@ OCAML_TEST_LIB = `ocamlfind query oUnit`/oUnit.cmxa
 
 PROGRAMS = sha1sum sha256sum sha512sum
 
-all: sha1.cmi sha1.cma sha1.cmxa sha256.cma sha256.cmxa sha512.cma sha512.cmxa
+allshabytes = $(foreach n, 1 256 512, sha$(n).lib.o sha$(n)_stubs.o sha$(n).cmo)
+allshaopts  = $(foreach n, 1 256 512, sha$(n).lib.o sha$(n)_stubs.o sha$(n).cmx)
+
+all: sha1.cmi sha1.cma sha1.cmxa sha256.cma sha256.cmxa sha512.cma sha512.cmxa sha.cma sha.cmxa
 
 bins: $(PROGRAMS)
 
@@ -22,6 +25,12 @@ sha256sum: sha1sum
 
 sha512sum: sha1sum
 	cp $< $@
+
+sha.cma: shacommon.cmo $(allshabytes)
+	$(OCAMLMKLIB) -o sha $(allshabytes)
+
+sha.cmxa: shacommon.cmo $(allshaopts)
+	$(OCAMLMKLIB) -o sha $(allshaopts)
 
 sha1.cma: shacommon.cmo sha1.cmi sha1.lib.o sha1_stubs.o sha1.cmo
 	$(OCAMLMKLIB) -o sha1 sha1.lib.o sha1_stubs.o sha1.cmo
