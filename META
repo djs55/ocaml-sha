@@ -1,0 +1,25 @@
+description="OCaml SHA-1 and SHA-2 implementations"
+version="1.6"
+archive(byte)="ocamlsha.cma"
+archive(native)="ocamlsha.cmxa"
+
+package "sha1" (
+  description="OCamlSHA SHA-1 Implementation"
+  version="1.6"
+  archive(byte)="sha1.cma"
+  archive(native)="sha1.cmxa"
+)
+
+package "sha256" (
+  description="OCamlSHA SHA-256 Implementation"
+  version="1.6"
+  archive(byte)="sha256.cma"
+  archive(native)="sha256.cmxa"
+)
+
+package "sha512" (
+  description="OCamlSHA SHA-512 Implementation"
+  version="1.6"
+  archive(byte)="sha512.cma"
+  archive(native)="sha512.cmxa"
+)
