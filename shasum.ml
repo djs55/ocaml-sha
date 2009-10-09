@@ -80,7 +80,7 @@ let _ =
 		else
 			basename
 		in
-	let sha = match basename with
+	let sha = match prog with
 		| "sha512sum" -> sha512
 		| "sha256sum" -> sha256
 		| "sha1sum"   -> sha1
