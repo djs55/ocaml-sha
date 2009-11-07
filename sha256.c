@@ -189,6 +189,18 @@ void sha256_finalize(struct sha256_ctx *ctx, sha256_digest *out)
 }
 
 /**
+ * sha256_to_bin - Transform the SHA256 digest into a binary data
+ */
+void sha256_to_bin(sha256_digest *digest, char *out)
+{
+	uint32_t *ptr = (uint32_t *) out;
+	int i;
+
+	for (i = 0; i < 8; i++)
+		ptr[i] = be32_to_cpu(digest->digest[i]);
+}
+
+/**
  * sha256_to_hex - Transform the SHA256 digest into a readable data
  */
 void sha256_to_hex(sha256_digest *digest, char *out)

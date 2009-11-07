@@ -27,6 +27,7 @@ typedef struct { unsigned int digest[5]; } sha1_digest;
 void sha1_init(struct sha1_ctx *ctx);
 void sha1_update(struct sha1_ctx *ctx, unsigned char *data, int len);
 void sha1_finalize(struct sha1_ctx *ctx, sha1_digest *out);
+void sha1_to_bin(sha1_digest *digest, char *out);
 void sha1_to_hex(sha1_digest *digest, char *out);
 
 #endif

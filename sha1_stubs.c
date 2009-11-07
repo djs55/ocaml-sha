@@ -90,6 +90,17 @@ CAMLprim value stub_sha1_file(value name)
 	CAMLreturn(result);
 }
 
+CAMLprim value stub_sha1_to_bin(value digest)
+{
+	CAMLparam1(digest);
+	CAMLlocal1(result);
+
+	result = caml_alloc_string(20);
+	sha1_to_bin((sha1_digest *) digest, String_val(result));
+
+	CAMLreturn(result);
+}
+
 CAMLprim value stub_sha1_to_hex(value digest)
 {
 	CAMLparam1(digest);

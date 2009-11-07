@@ -209,6 +209,19 @@ void sha512_finalize(struct sha512_ctx *ctx, sha512_digest *out)
 }
 
 /**
+ * sha512_to_bin - Transform the SHA512 digest into a binary data
+ */
+void sha512_to_bin(sha512_digest *digest, char *out)
+{
+	uint64_t *ptr = (uint64_t *) out;
+	int i;
+
+	for (i = 0; i < 8; i++)
+		ptr[i] = be64_to_cpu(digest->digest[i]);
+}
+
+
+/**
  * sha512_to_hex - Transform the SHA512 digest into a readable data
  */
 void sha512_to_hex(sha512_digest *digest, char *out)

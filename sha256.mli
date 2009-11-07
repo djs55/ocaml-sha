@@ -43,5 +43,8 @@ val output : out_channel -> t -> unit
 (** Read a digest from the given input channel. *)
 val input : in_channel -> t
 
+(** return a binary representation of the given digest *)
+val to_bin : t -> string
+
 (** return a printable hexadecimal representation of the given digest *)
 val to_hex : t -> string

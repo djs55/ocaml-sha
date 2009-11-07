@@ -89,6 +89,17 @@ CAMLprim value stub_sha512_file(value name)
 	CAMLreturn(result);
 }
 
+CAMLprim value stub_sha512_to_bin(value digest)
+{
+	CAMLparam1(digest);
+	CAMLlocal1(result);
+
+	result = caml_alloc_string(64);
+	sha512_to_bin((sha512_digest *) digest, String_val(result));
+
+	CAMLreturn(result);
+}
+
 CAMLprim value stub_sha512_to_hex(value digest)
 {
 	CAMLparam1(digest);
