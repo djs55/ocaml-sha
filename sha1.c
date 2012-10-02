@@ -242,17 +242,17 @@ void sha1_finalize(struct sha1_ctx *ctx, sha1_digest *out)
 }
 
 /**
- * sha1_to_hex - Transform the SHA1 digest into a binary data
+ * sha1_to_bin - Transform the SHA1 digest into a binary data
  */
 void sha1_to_bin(sha1_digest *digest, char *out)
 {
 	uint32_t *ptr = (uint32_t *) out;
 
-	ptr[0] = cpu_to_be32(digest->digest[0]);
-	ptr[1] = cpu_to_be32(digest->digest[1]);
-	ptr[2] = cpu_to_be32(digest->digest[2]);
-	ptr[3] = cpu_to_be32(digest->digest[3]);
-	ptr[4] = cpu_to_be32(digest->digest[4]);
+	ptr[0] = digest->digest[0];
+	ptr[1] = digest->digest[1];
+	ptr[2] = digest->digest[2];
+	ptr[3] = digest->digest[3];
+	ptr[4] = digest->digest[4];
 }
 
 /**
@@ -266,4 +266,3 @@ void sha1_to_hex(sha1_digest *digest, char *out)
 		D(0), D(1), D(2), D(3), D(4));
 	#undef D
 }
-
