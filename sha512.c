@@ -217,7 +217,7 @@ void sha512_to_bin(sha512_digest *digest, char *out)
 	int i;
 
 	for (i = 0; i < 8; i++)
-		ptr[i] = be64_to_cpu(digest->digest[i]);
+		ptr[i] = digest->digest[i];
 }
 
 

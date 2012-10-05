@@ -197,7 +197,7 @@ void sha256_to_bin(sha256_digest *digest, char *out)
 	int i;
 
 	for (i = 0; i < 8; i++)
-		ptr[i] = be32_to_cpu(digest->digest[i]);
+		ptr[i] = digest->digest[i];
 }
 
 /**
@@ -211,4 +211,3 @@ void sha256_to_hex(sha256_digest *digest, char *out)
 	for (p = out, i = 0; i < 8; i++, p += 8)
 		snprintf(p, 9, "%08x", be32_to_cpu(digest->digest[i]));
 }
-
