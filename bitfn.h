@@ -65,7 +65,12 @@ static inline uint64_t swap64(uint64_t a)
 #endif
 
 /* big endian to cpu */
+#ifdef __APPLE__
+#include <architecture/byte_order.h>
+#else
 #include <endian.h>
+#endif
+
 #if LITTLE_ENDIAN == BYTE_ORDER
 #define be32_to_cpu(a) swap32(a)
 #define cpu_to_be32(a) swap32(a)
