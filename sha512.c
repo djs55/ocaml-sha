@@ -35,6 +35,14 @@ void sha512_init(struct sha512_ctx *ctx)
 	ctx->h[7] = 0x5be0cd19137e2179ULL;
 }
 
+/**
+ * sha512_copy - Copy SHA512 context
+ */
+void sha512_copy(struct sha512_ctx *dst, struct sha512_ctx *src)
+{
+	memcpy(dst, src, sizeof(*dst));
+}
+
 /* 232 times the cube root of the first 64 primes 2..311 */
 static const uint64_t k[] = {
 	0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL, 0xb5c0fbcfec4d3b2fULL,

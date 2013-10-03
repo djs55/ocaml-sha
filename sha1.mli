@@ -14,8 +14,43 @@
 
 (** SHA1 OCaml binding *)
 
+(** context type - opaque *)
+type ctx
+
+(** buffer type *)
+type buf = (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+
 (** digest type - opaque *)
 type t
+
+(** The zero digest *)
+val zero : t
+
+(** Create a new context *)
+external init: unit -> ctx = "stub_sha1_init"
+
+(** Sha1.unsafe_update_substring ctx s ofs len updates the context
+    with the substring of s starting at character number ofs and
+    containing len characters. Unsafe: No range checking! *)
+external unsafe_update_substring: ctx -> string -> int -> int -> unit = "stub_sha1_update"
+
+(** Sha1.update_substring ctx s ofs len updates the context with the
+    substring of s starting at character number ofs and containing len
+    characters. *)
+val update_substring: ctx -> string -> int -> int -> unit
+
+(** Sha1.update_string ctx s updates the context with s. *)
+val update_string: ctx -> string -> unit
+
+(** Sha1.update_buffer ctx a updates the context with a.
+    Runs parallel to other threads if any exist. *)
+external update_buffer: ctx -> buf -> unit = "stub_sha1_update_bigarray"
+
+(** Finalize the context and return digest *)
+external finalize: ctx -> t = "stub_sha1_finalize"
+
+(** Return an copy of the context *)
+external copy : ctx -> ctx = "stub_sha1_copy"
 
 (** Return the digest of the given string. *)
 val string : string -> t
