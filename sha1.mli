@@ -26,10 +26,18 @@ val zero : t
 (** Create a new context *)
 external init: unit -> ctx = "stub_sha1_init"
 
-(** Sha1.update ctx s ofs len updates the context with the substring
-    of s starting at character number ofs and containing len
-    characters. Unsafe: No range checking! *)
-external update: ctx -> string -> int -> int -> unit = "stub_sha1_update"
+(** Sha1.unsafe_update_substring ctx s ofs len updates the context
+    with the substring of s starting at character number ofs and
+    containing len characters. Unsafe: No range checking! *)
+external unsafe_update_substring: ctx -> string -> int -> int -> unit = "stub_sha1_update"
+
+(** Sha1.update_substring ctx s ofs len updates the context with the
+    substring of s starting at character number ofs and containing len
+    characters. *)
+val update_substring: ctx -> string -> int -> int -> unit
+
+(** Sha1.update_string ctx s updates the context with s. *)
+val update_string: ctx -> string -> unit
 
 (** Finalize the context and return digest *)
 external finalize: ctx -> t = "stub_sha1_finalize"

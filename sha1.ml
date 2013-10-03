@@ -17,7 +17,7 @@ type ctx
 type t
 
 external init: unit -> ctx = "stub_sha1_init"
-external update: ctx -> string -> int -> int -> unit = "stub_sha1_update"
+external unsafe_update_substring: ctx -> string -> int -> int -> unit = "stub_sha1_update"
 external finalize: ctx -> t = "stub_sha1_finalize"
 external copy : ctx -> ctx = "stub_sha1_copy"
 external to_bin: t -> string = "stub_sha1_to_bin"
@@ -26,9 +26,18 @@ external file_fast: string -> t = "stub_sha1_file"
 
 let blksize = 4096
 
+let update_substring ctx s ofs len =
+	if len <= 0 && String.length s < ofs + len then
+		invalid_arg "substring";
+	unsafe_update_substring ctx s ofs len
+
+let update_string ctx s =
+	unsafe_update_substring ctx s 0 (String.length s)
+
+
 let string s =
 	let ctx = init () in
-	update ctx s 0 (String.length s);
+	unsafe_update_substring ctx s 0 (String.length s);
 	finalize ctx
 
 let zero = string ""
@@ -37,7 +46,7 @@ let substring s ofs len =
 	if len <= 0 && String.length s < ofs + len then
 		invalid_arg "substring";
 	let ctx = init () in
-	update ctx s ofs len;
+	unsafe_update_substring ctx s ofs len;
 	finalize ctx
 
 let channel chan len =
@@ -52,7 +61,7 @@ let channel chan len =
 		if readed = 0 then
 			eof := true
 		else (
-			update ctx buf 0 readed;
+			unsafe_update_substring ctx buf 0 readed;
 			if !left <> -1 then left := !left - readed
 		)
 	done;
