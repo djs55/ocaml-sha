@@ -14,10 +14,12 @@
  *)
 
 type ctx
+type buf = (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 type t
 
 external init: unit -> ctx = "stub_sha256_init"
 external unsafe_update_substring: ctx -> string -> int -> int -> unit = "stub_sha256_update"
+external update_buffer: ctx -> buf -> unit = "stub_sha256_update_bigarray"
 external finalize: ctx -> t = "stub_sha256_finalize"
 external copy : ctx -> ctx = "stub_sha256_copy"
 external to_bin: t -> string = "stub_sha256_to_bin"
@@ -34,6 +36,8 @@ let update_substring ctx s ofs len =
 let update_string ctx s =
 	unsafe_update_substring ctx s 0 (String.length s)
 
+external update_bigarray: ctx -> (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t -> unit = "stub_sha256_update_bigarray"
+
 let string s =
 	let ctx = init () in
 	unsafe_update_substring ctx s 0 (String.length s);
@@ -46,6 +50,11 @@ let substring s ofs len =
 		invalid_arg "substring";
 	let ctx = init () in
 	unsafe_update_substring ctx s ofs len;
+	finalize ctx
+
+let buffer buf =
+	let ctx = init () in
+	update_buffer ctx buf;
 	finalize ctx
 
 let channel chan len =

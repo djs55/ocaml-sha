@@ -17,6 +17,9 @@
 (** context type - opaque *)
 type ctx
 
+(** buffer type *)
+type buf = (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+
 (** digest type - opaque *)
 type t
 
@@ -38,6 +41,10 @@ val update_substring: ctx -> string -> int -> int -> unit
 
 (** Sha1.update_string ctx s updates the context with s. *)
 val update_string: ctx -> string -> unit
+
+(** Sha1.update_buffer ctx a updates the context with a.
+    Runs parallel to other threads if any exist. *)
+external update_buffer: ctx -> buf -> unit = "stub_sha1_update_bigarray"
 
 (** Finalize the context and return digest *)
 external finalize: ctx -> t = "stub_sha1_finalize"

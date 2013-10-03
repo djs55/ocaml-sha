@@ -44,6 +44,7 @@ static inline int sha1_file(char *filename, sha1_digest *digest)
 #include <caml/alloc.h>
 #include <caml/custom.h>
 #include <caml/fail.h>
+#include <caml/bigarray.h>
 #include <caml/threads.h>
 
 #define GET_CTX_STRUCT(a) ((struct sha1_ctx *) a)
@@ -68,6 +69,20 @@ CAMLprim value stub_sha1_update(value ctx, value data, value ofs, value len)
 
 	CAMLreturn(Val_unit);
 }
+
+CAMLprim value stub_sha1_update_bigarray(value ctx, value buf)
+{
+	CAMLparam2(ctx, buf);
+	unsigned char *data = Data_bigarray_val(buf);
+	size_t len = Bigarray_val(buf)->dim[0];
+
+	caml_release_runtime_system();
+	sha1_update(GET_CTX_STRUCT(ctx), data, len);
+	caml_acquire_runtime_system();
+
+	CAMLreturn(Val_unit);
+}
+
 
 CAMLprim value stub_sha1_finalize(value ctx)
 {
