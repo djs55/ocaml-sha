@@ -19,6 +19,7 @@ type t
 external init: unit -> ctx = "stub_sha256_init"
 external update: ctx -> string -> int -> int -> unit = "stub_sha256_update"
 external finalize: ctx -> t = "stub_sha256_finalize"
+external copy : ctx -> ctx = "stub_sha256_copy"
 external to_bin: t -> string = "stub_sha256_to_bin"
 external to_hex: t -> string = "stub_sha256_to_hex"
 external file_fast: string -> t = "stub_sha256_file"

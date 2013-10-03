@@ -80,6 +80,17 @@ CAMLprim value stub_sha1_finalize(value ctx)
 	CAMLreturn(result);
 }
 
+CAMLprim value stub_sha1_copy(value ctx)
+{
+	CAMLparam1(ctx);
+	CAMLlocal1(result);
+
+	result = caml_alloc(sizeof(struct sha1_ctx), Abstract_tag);
+	sha1_copy(GET_CTX_STRUCT(result), GET_CTX_STRUCT(ctx));
+
+	CAMLreturn(result);
+}
+
 #ifndef strdupa
 #define strdupa(s) strcpy(alloca(strlen(s)+1),s)
 #endif

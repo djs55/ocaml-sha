@@ -34,6 +34,9 @@ external update: ctx -> string -> int -> int -> unit = "stub_sha512_update"
 (** Finalize the context and return digest *)
 external finalize: ctx -> t = "stub_sha512_finalize"
 
+(** Return an copy of the context *)
+external copy : ctx -> ctx = "stub_sha512_copy"
+
 (** Return the digest of the given string. *)
 val string : string -> t
 
