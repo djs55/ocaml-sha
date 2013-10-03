@@ -14,8 +14,25 @@
 
 (** SHA1 OCaml binding *)
 
+(** context type - opaque *)
+type ctx
+
 (** digest type - opaque *)
 type t
+
+(** The zero digest *)
+val zero : t
+
+(** Create a new context *)
+external init: unit -> ctx = "stub_sha1_init"
+
+(** Sha1.update ctx s ofs len updates the context with the substring
+    of s starting at character number ofs and containing len
+    characters. Unsafe: No range checking! *)
+external update: ctx -> string -> int -> int -> unit = "stub_sha1_update"
+
+(** Finalize the context and return digest *)
+external finalize: ctx -> t = "stub_sha1_finalize"
 
 (** Return the digest of the given string. *)
 val string : string -> t

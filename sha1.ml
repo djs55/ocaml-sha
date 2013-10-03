@@ -30,6 +30,8 @@ let string s =
 	update ctx s 0 (String.length s);
 	finalize ctx
 
+let zero = string ""
+
 let substring s ofs len =
 	if len <= 0 && String.length s < ofs + len then
 		invalid_arg "substring";
