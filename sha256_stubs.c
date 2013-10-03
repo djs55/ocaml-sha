@@ -13,6 +13,7 @@
  * SHA256 implementation
  */
 
+#define _GNU_SOURCE
 #include <unistd.h>
 #include <fcntl.h>
 #include "sha256.h"
@@ -24,7 +25,7 @@ static inline int sha256_file(char *filename, sha256_digest *digest)
 	int fd; ssize_t n;
 	struct sha256_ctx ctx;
 
-	fd = open(filename, O_RDONLY);
+	fd = open(filename, O_RDONLY | O_CLOEXEC);
 	if (fd == -1)
 		return 1;
 	sha256_init(&ctx);
@@ -43,6 +44,7 @@ static inline int sha256_file(char *filename, sha256_digest *digest)
 #include <caml/alloc.h>
 #include <caml/custom.h>
 #include <caml/fail.h>
+#include <caml/threads.h>
 
 #define GET_CTX_STRUCT(a) ((struct sha256_ctx *) a)
 
@@ -77,14 +79,26 @@ CAMLprim value stub_sha256_finalize(value ctx)
 	CAMLreturn(result);
 }
 
+#ifndef strdupa
+#define strdupa(s) strcpy(alloca(strlen(s)+1),s)
+#endif
+
 CAMLprim value stub_sha256_file(value name)
 {
 	CAMLparam1(name);
 	CAMLlocal1(result);
 
+	char *name_dup = strdupa(String_val(name));
+	sha256_digest digest;
+
+	caml_release_runtime_system();
+	if (sha256_file(name_dup, &digest)) {
+	    caml_acquire_runtime_system();
+	    caml_failwith("file error");
+	}
+	caml_acquire_runtime_system();
 	result = caml_alloc(sizeof(sha256_digest), Abstract_tag);
-	if (sha256_file(String_val(name), (sha256_digest *) result))
-		caml_failwith("file error");
+	memcpy((sha256_digest *)result, &digest, sizeof(sha256_digest));
 
 	CAMLreturn(result);
 }
