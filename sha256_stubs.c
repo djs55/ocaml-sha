@@ -16,6 +16,7 @@
 #define _GNU_SOURCE
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 #include "sha256.h"
 
 static inline int sha256_file(char *filename, sha256_digest *digest)
