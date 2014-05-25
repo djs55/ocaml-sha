@@ -25,9 +25,23 @@ static inline int sha1_file(char *filename, sha1_digest *digest)
 	int fd; ssize_t n;
 	struct sha1_ctx ctx;
 
+#ifdef O_CLOEXEC
 	fd = open(filename, O_RDONLY | O_CLOEXEC);
+#else
+	fd = open(filename, O_RDONLY);
+#endif
 	if (fd == -1)
 		return 1;
+#ifndef O_CLOEXEC
+{
+	int val;
+	val = fcntl(fd, F_GETFD, 0);
+	if (val < 0)
+		return 1;
+	val |= FD_CLOEXEC;
+	fcntl(fd, F_SETFD, val);
+}
+#endif
 	sha1_init(&ctx);
 	while ((n = read(fd, buf, BLKSIZE)) > 0)
 		sha1_update(&ctx, buf, n);
