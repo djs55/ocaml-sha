@@ -16,6 +16,7 @@
 #define _GNU_SOURCE
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 #include "sha512.h"
 
 static inline int sha512_file(char *filename, sha512_digest *digest)
@@ -25,9 +26,23 @@ static inline int sha512_file(char *filename, sha512_digest *digest)
 	int fd; ssize_t n;
 	struct sha512_ctx ctx;
 
+#ifdef O_CLOEXEC
 	fd = open(filename, O_RDONLY | O_CLOEXEC);
+#else
+	fd = open(filename, O_RDONLY);
+#endif
 	if (fd == -1)
 		return 1;
+#ifndef O_CLOEXEC
+{
+	int val;
+	val = fcntl(fd, F_GETFD, 0);
+	if (val < 0)
+		return 1;
+	val |= FD_CLOEXEC;
+	fcntl(fd, F_SETFD, val);
+}
+#endif
 	sha512_init(&ctx);
 	while ((n = read(fd, buf, BLKSIZE)) > 0)
 		sha512_update(&ctx, buf, n);
