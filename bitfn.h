@@ -40,6 +40,7 @@ static inline uint64_t ror64(uint64_t word, unsigned int shift)
 	return (word >> shift) | (word << (64 - shift));
 }
 
+#if !defined(swap32)
 #if (defined(__i386__) || defined(__x86_64__)) && !defined(NO_INLINE_ASM)
 static inline unsigned int swap32(unsigned int a)
 {
@@ -52,11 +53,13 @@ static inline unsigned int swap32(unsigned int a)
 	return (a << 24) | ((a & 0xff00) << 8) | ((a >> 8) & 0xff00) | (a >> 24);
 }
 #endif
+#endif
 
+#if !defined(swap64)
 #if defined(__x86_64__) && !defined(NO_INLINE_ASM)
 static inline uint64_t swap64(uint64_t a)
 {
-	asm ("bswap %0" : "=r" (a) : "0" (a));
+	asm ("bswapq %0" : "=r" (a) : "0" (a));
 	return a;
 }
 #else
@@ -65,6 +68,7 @@ static inline uint64_t swap64(uint64_t a)
 	return ((uint64_t) swap32((unsigned int) (a >> 32))) |
 	       (((uint64_t) swap32((unsigned int) a)) << 32);
 }
+#endif
 #endif
 
 /* big endian to cpu */
