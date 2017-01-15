@@ -21,7 +21,6 @@ external init: unit -> ctx = "stub_sha1_init"
 external unsafe_update_substring: ctx -> string -> int -> int -> unit = "stub_sha1_update"
 external update_buffer: ctx -> buf -> unit = "stub_sha1_update_bigarray"
 external finalize: ctx -> t = "stub_sha1_finalize"
-external copy : ctx -> ctx = "stub_sha1_copy"
 external to_bin: t -> string = "stub_sha1_to_bin"
 external to_hex: t -> string = "stub_sha1_to_hex"
 external file_fast: string -> t = "stub_sha1_file"
@@ -43,6 +42,8 @@ let string s =
 	finalize ctx
 
 let zero = string ""
+
+let copy :ctx -> ctx = fun x -> Obj.obj (Obj.dup (Obj.repr x))
 
 let substring s ofs len =
 	if len <= 0 && String.length s < ofs + len then

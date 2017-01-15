@@ -33,14 +33,6 @@ void sha1_init(struct sha1_ctx *ctx)
 	ctx->h[4] = 0xC3D2E1F0;
 }
 
-/**
- * sha1_copy - Copy SHA1 context
- */
-void sha1_copy(struct sha1_ctx *dst, struct sha1_ctx *src)
-{
-	memcpy(dst, src, sizeof(*dst));
-}
-
 #define f1(x, y, z)   (z ^ (x & (y ^ z)))         /* x ? y : z */
 #define f2(x, y, z)   (x ^ y ^ z)                 /* XOR */
 #define f3(x, y, z)   ((x & y) + (z & (x ^ y)))   /* majority */
