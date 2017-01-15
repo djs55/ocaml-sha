@@ -111,17 +111,6 @@ CAMLprim value stub_sha512_finalize(value ctx)
 	CAMLreturn(result);
 }
 
-CAMLprim value stub_sha512_copy(value ctx)
-{
-	CAMLparam1(ctx);
-	CAMLlocal1(result);
-
-	result = caml_alloc(sizeof(struct sha512_ctx), Abstract_tag);
-	sha512_copy(GET_CTX_STRUCT(result), GET_CTX_STRUCT(ctx));
-
-	CAMLreturn(result);
-}
-
 #ifndef strdupa
 #define strdupa(s) strcpy(alloca(strlen(s)+1),s)
 #endif

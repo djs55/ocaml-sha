@@ -39,14 +39,6 @@ void sha256_init(struct sha256_ctx *ctx)
 	ctx->h[7] = 0x5be0cd19;
 }
 
-/**
- * sha256_copy - Copy SHA256 context
- */
-void sha256_copy(struct sha256_ctx *dst, struct sha256_ctx *src)
-{
-	memcpy(dst, src, sizeof(*dst));
-}
-
 /* 232 times the cube root of the first 64 primes 2..311 */
 static const unsigned int k[] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,

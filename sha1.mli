@@ -53,7 +53,7 @@ external update_buffer: ctx -> buf -> unit = "stub_sha1_update_bigarray"
 external finalize: ctx -> t = "stub_sha1_finalize"
 
 (** Return an copy of the context *)
-external copy : ctx -> ctx = "stub_sha1_copy"
+val copy: ctx -> ctx
 
 (** Return the digest of the given string. *)
 val string : string -> t

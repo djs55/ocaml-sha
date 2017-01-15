@@ -30,7 +30,6 @@ struct sha512_ctx
 typedef struct { uint64_t digest[8]; } sha512_digest;
 
 void sha512_init(struct sha512_ctx *ctx);
-void sha512_copy(struct sha512_ctx *dst, struct sha512_ctx *src);
 void sha512_update(struct sha512_ctx *ctx, unsigned char *data, int len);
 void sha512_finalize(struct sha512_ctx *ctx, sha512_digest *out);
 void sha512_to_bin(sha512_digest *digest, char *out);
