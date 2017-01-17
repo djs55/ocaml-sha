@@ -24,7 +24,6 @@ typedef SSIZE_T ssize_t;
 #else
 #include <unistd.h>
 #endif
-#include <string.h>
 #include <fcntl.h>
 #include <string.h>
 #include "sha256.h"
@@ -105,54 +104,8 @@ CAMLprim value stub_sha256_finalize(value ctx)
 	CAMLparam1(ctx);
 	CAMLlocal1(result);
 
-	result = caml_alloc(sizeof(sha256_digest), Abstract_tag);
-	sha256_finalize(GET_CTX_STRUCT(ctx), (sha256_digest *) result);
-
-	CAMLreturn(result);
-}
-
-#ifndef strdupa
-#define strdupa(s) strcpy(alloca(strlen(s)+1),s)
-#endif
-
-CAMLprim value stub_sha256_file(value name)
-{
-	CAMLparam1(name);
-	CAMLlocal1(result);
-
-	char *name_dup = strdupa(String_val(name));
-	sha256_digest digest;
-
-	caml_release_runtime_system();
-	if (sha256_file(name_dup, &digest)) {
-	    caml_acquire_runtime_system();
-	    caml_failwith("file error");
-	}
-	caml_acquire_runtime_system();
-	result = caml_alloc(sizeof(sha256_digest), Abstract_tag);
-	memcpy((sha256_digest *)result, &digest, sizeof(sha256_digest));
-
-	CAMLreturn(result);
-}
-
-CAMLprim value stub_sha256_to_bin(value digest)
-{
-	CAMLparam1(digest);
-	CAMLlocal1(result);
-
 	result = caml_alloc_string(32);
-	sha256_to_bin((sha256_digest *) digest, String_val(result));
-
-	CAMLreturn(result);
-}
-
-CAMLprim value stub_sha256_to_hex(value digest)
-{
-	CAMLparam1(digest);
-	CAMLlocal1(result);
-
-	result = caml_alloc_string(64);
-	sha256_to_hex((sha256_digest *) digest, String_val(result));
+	sha256_finalize(GET_CTX_STRUCT(ctx), (sha256_digest *) result);
 
 	CAMLreturn(result);
 }

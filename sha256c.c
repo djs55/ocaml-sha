@@ -190,27 +190,3 @@ void sha256_finalize(struct sha256_ctx *ctx, sha256_digest *out)
 	for (i = 0; i < 8; i++)
 		out->digest[i] = cpu_to_be32(ctx->h[i]);
 }
-
-/**
- * sha256_to_bin - Transform the SHA256 digest into a binary data
- */
-void sha256_to_bin(sha256_digest *digest, char *out)
-{
-	uint32_t *ptr = (uint32_t *) out;
-	int i;
-
-	for (i = 0; i < 8; i++)
-		ptr[i] = digest->digest[i];
-}
-
-/**
- * sha256_to_hex - Transform the SHA256 digest into a readable data
- */
-void sha256_to_hex(sha256_digest *digest, char *out)
-{
-	char *p;
-	int i;
-
-	for (p = out, i = 0; i < 8; i++, p += 8)
-		snprintf(p, 9, "%08x", be32_to_cpu(digest->digest[i]));
-}
