@@ -14,6 +14,7 @@
  *)
 
 open Printf
+open Hash
 
 let printfct get_digest file =
 	let digest = get_digest file in
@@ -68,7 +69,13 @@ let _ =
 	done;
 
 	let md5 file = Digest.to_hex (Digest.file file) in
-	let sha1 file = Sha1.to_hex (Sha1.file file) in
+	let sha1 file =
+                let digest = Sha1.file file in
+                prerr_endline "Got digest";
+                let hex = Sha1.to_hex digest in
+                prerr_endline "Got hex";
+                hex in
+                (* Sha1.to_hex (Sha1.file file) in *)
 	let sha256 file = Sha256.to_hex (Sha256.file file) in
 	let sha512 file = Sha512.to_hex (Sha512.file file) in
 

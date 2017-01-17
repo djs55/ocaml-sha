@@ -27,7 +27,5 @@ typedef struct { unsigned int digest[8]; } sha256_digest;
 void sha256_init(struct sha256_ctx *ctx);
 void sha256_update(struct sha256_ctx *ctx, unsigned char *data, int len);
 void sha256_finalize(struct sha256_ctx *ctx, sha256_digest *out);
-void sha256_to_bin(sha256_digest *digest, char *out);
-void sha256_to_hex(sha256_digest *digest, char *out);
 
 #endif
