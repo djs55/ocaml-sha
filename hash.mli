@@ -100,6 +100,7 @@ module type S =
     val to_hex : t -> string
   end
 
+module Md5 :S with type t = string
 module Sha1 :S with type t = string
 module Sha256 :S with type t = string
 module Sha512 :S with type t = string

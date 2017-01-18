@@ -20,10 +20,10 @@ ifeq "$(shell ocamlc -config | fgrep 'ccomp_type:')" "ccomp_type: msvc"
 endif
 endif
 
-PROGRAMS_BINS = sha1sum sha256sum sha512sum
+PROGRAMS_BINS = md5sum sha1sum sha256sum sha512sum
 PROGRAMS = $(addsuffix $(EXE), $(PROGRAMS_BINS))
 
-allclibs = $(foreach n, 1 256 512, sha$(n).lib.$(OBJ) sha$(n)_stubs.$(OBJ))
+allclibs = $(foreach n, 1 256 512, sha$(n).lib.$(OBJ) sha$(n)_stubs.$(OBJ)) md5_stubs.$(OBJ)
 
 allbytes = hash.cmo $(allclibs)
 allopts  = hash.cmx $(allclibs)
@@ -35,8 +35,11 @@ bins: $(PROGRAMS)
 hash_test: hash.cma hash_test.ml
 	$(OCAMLC) -o $@ -custom -linkpkg -package oUnit -cclib -L. hash.cma hash_test.ml
 
-sha1sum$(EXE): hash.cma cksum.ml
+md5sum$(EXE): hash.cma cksum.ml
 	$(OCAMLC) -o $@ -custom -cclib -L. hash.cma cksum.ml
+
+sha1sum$(EXE): hash.cma cksum.ml
+	ln -f $< $@
 
 sha256sum$(EXE): sha1sum$(EXE)
 	ln -f $< $@

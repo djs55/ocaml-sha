@@ -16,6 +16,15 @@
 open OUnit
 open Hash
 
+let ex_strings_md5 = [
+	("",
+	"d41d8cd98f00b204e9800998ecf8427e");
+	("The quick brown fox jumps over the lazy cog",
+	"1055d3e698d289f2af8663725127bd4b");
+	("The quick brown fox jumps over the lazy dog",
+	"9e107d9d372bb6826bd81d3542a419d6");
+]
+
 let ex_strings_sha1 = [
 	("",
 	"da39a3ee5e6b4b0d3255bfef95601890afd80709");
@@ -41,6 +50,10 @@ let ex_strings_sha512 = [
 	"07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6"); ]
 
 
+let ex_files_md5 =
+	[ ("README",
+	"4d407e0b688ba6fabc4c00ee1e699d1f") ]
+
 let ex_files_sha1 =
 	[ ("README",
 	"ebd97ba45cd1668d242d98522dc0004bb70df4a8") ]
@@ -53,6 +66,10 @@ let ex_files_sha512 =
 	[ ("README",
 	"da82cac10002a838aceedc7910b76735ec87b2dce08755680910b8ff287c0f48a1910989f8e3a94f9cb5a391e66d811d190bc3568135514229051c06c6e93f6e") ]
 
+
+let ex_channels_md5 =
+	[ ("hash_test.ml", "c6c79b2b582207458ea956b5278a8a62") ]
+
 let ex_channels_sha1 =
 	[ ("hash_test.ml", "e13052afa4916d56994378f847f157596f9638a2") ]
 
@@ -64,14 +81,17 @@ let ex_channels_sha512 =
 	[ ("hash_test.ml",
 	"2f8e603774643ce152620e1dd94601393e78d33a3e6f67b86df2ef87eb4ad0cde72b481208eaa0249bbcf64072f2fb03b06abd006c5213c7546936ae9e9a1dc1") ]
 
+let stringfct_md5 s = Md5.to_hex (Md5.string s)
 let stringfct_sha1 s = Sha1.to_hex (Sha1.string s)
 let stringfct_sha256 s = Sha256.to_hex (Sha256.string s)
 let stringfct_sha512 s = Sha512.to_hex (Sha512.string s)
 
+let filefct_md5 s = Md5.to_hex (Md5.file s)
 let filefct_sha1 s = Sha1.to_hex (Sha1.file s)
 let filefct_sha256 s = Sha256.to_hex (Sha256.file s)
 let filefct_sha512 s = Sha512.to_hex (Sha512.file s)
 
+let channelfct_md5 s i = Md5.to_hex (Md5.channel s i)
 let channelfct_sha1 s i = Sha1.to_hex (Sha1.channel s i)
 let channelfct_sha256 s i = Sha256.to_hex (Sha256.channel s i)
 let channelfct_sha512 s i = Sha512.to_hex (Sha512.channel s i)
@@ -89,8 +109,14 @@ let test_channel channelfct arr _ =
 		close_in chan;
 		assert_equal r digest) arr
 
-let suite = "SHA binding test" >:::
-	[ "SHA1 example strings" >::
+let suite = "hash bindings test" >:::
+	[ "MD5 example strings" >::
+		test_strings stringfct_md5 ex_strings_md5;
+	  "MD5 reading a file" >::
+		test_file filefct_md5 ex_files_md5;
+	  "MD5 reading few byte from channel" >::
+		test_channel channelfct_md5 ex_channels_md5;
+          "SHA1 example strings" >::
 		test_strings stringfct_sha1 ex_strings_sha1;
 	  "SHA1 reading a file" >::
 		test_file filefct_sha1 ex_files_sha1;

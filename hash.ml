@@ -177,6 +177,20 @@ module Make(Stubs: Stubs) :S with type t = Stubs.t =
             output_string chan (to_hex digest)
   end
 
+module Md5 = Make (
+  struct
+    type ctx
+    type t = string
+    let digest_length = 128
+
+    external to_bin: t -> string = "%identity"
+    external init: unit -> ctx = "stub_md5_init"
+    external unsafe_update_substring: ctx -> string -> int -> int -> unit = "stub_md5_update"
+    external update_buffer: ctx -> buf -> unit = "stub_md5_update_bigarray"
+    external finalize: ctx -> t = "stub_md5_finalize"
+  end
+  )
+
 module Sha1 = Make (
   struct
     type ctx
