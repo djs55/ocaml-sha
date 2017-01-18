@@ -36,14 +36,6 @@ void sha256_init(struct sha256_ctx *ctx)
 	ctx->h[7] = 0x5be0cd19;
 }
 
-/**
- * sha256_copy - Copy SHA256 context
- */
-void sha256_copy(struct sha256_ctx *dst, struct sha256_ctx *src)
-{
-	memcpy(dst, src, sizeof(*dst));
-}
-
 /* 232 times the cube root of the first 64 primes 2..311 */
 static const unsigned int k[] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
@@ -194,28 +186,4 @@ void sha256_finalize(struct sha256_ctx *ctx, sha256_digest *out)
 	/* store to digest */
 	for (i = 0; i < 8; i++)
 		out->digest[i] = cpu_to_be32(ctx->h[i]);
-}
-
-/**
- * sha256_to_bin - Transform the SHA256 digest into a binary data
- */
-void sha256_to_bin(sha256_digest *digest, char *out)
-{
-	uint32_t *ptr = (uint32_t *) out;
-	int i;
-
-	for (i = 0; i < 8; i++)
-		ptr[i] = digest->digest[i];
-}
-
-/**
- * sha256_to_hex - Transform the SHA256 digest into a readable data
- */
-void sha256_to_hex(sha256_digest *digest, char *out)
-{
-	char *p;
-	int i;
-
-	for (p = out, i = 0; i < 8; i++, p += 8)
-		snprintf(p, 9, "%08x", be32_to_cpu(digest->digest[i]));
 }

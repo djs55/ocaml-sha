@@ -1,7 +1,8 @@
 CFLAGS = -Wall -O3 -funroll-loops -I/usr/include
-OCAMLC = ocamlc
-OCAMLOPT = ocamlopt
-OCAMLMKLIB = ocamlmklib
+OCAMLFIND = ocamlfind
+OCAMLC = $(OCAMLFIND) ocamlc -safe-string
+OCAMLOPT = $(OCAMLFIND) ocamlopt -safe-string
+OCAMLMKLIB = $(OCAMLFIND) ocamlmklib
 
 # on unix architecture we just use the default value
 EXE=
@@ -19,76 +20,50 @@ ifeq "$(shell ocamlc -config | fgrep 'ccomp_type:')" "ccomp_type: msvc"
 endif
 endif
 
-OCAMLOPTFLAGS =
-
-OCAML_TEST_INC = -I `ocamlfind query oUnit`
-OCAML_TEST_LIB = `ocamlfind query oUnit`/oUnit.cmxa
-
-PROGRAMS_BINS = sha1sum sha256sum sha512sum
+PROGRAMS_BINS = md5sum sha1sum sha256sum sha512sum
 PROGRAMS = $(addsuffix $(EXE), $(PROGRAMS_BINS))
 
-allshabytes = $(foreach n, 1 256 512, sha$(n).lib.$(OBJ) sha$(n)_stubs.$(OBJ) sha$(n).cmo)
-allshaopts  = $(foreach n, 1 256 512, sha$(n).lib.$(OBJ) sha$(n)_stubs.$(OBJ) sha$(n).cmx)
+allclibs = $(foreach n, 1 256 512, sha$(n).lib.$(OBJ) sha$(n)_stubs.$(OBJ)) md5_stubs.$(OBJ)
 
-all: sha1.cmi sha1.cma sha1.cmxa sha256.cma sha256.cmxa sha512.cma sha512.cmxa sha.cma sha.cmxa
+allbytes = hash.cmo $(allclibs)
+allopts  = hash.cmx $(allclibs)
+
+all: hash.cmi hash.cma hash.cmxa
 
 bins: $(PROGRAMS)
 
-sha1sum$(EXE): sha1.cmxa sha256.cmxa sha512.cmxa shasum.cmx
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -o $@ -cclib -L. $+
+hash_test: hash.cma hash_test.ml
+	$(OCAMLC) -o $@ -custom -linkpkg -package oUnit -cclib -L. hash.cma hash_test.ml
+
+md5sum$(EXE): hash.cma cksum.ml
+	$(OCAMLC) -o $@ -custom -cclib -L. hash.cma cksum.ml
+
+sha1sum$(EXE): hash.cma cksum.ml
+	ln -f $< $@
 
 sha256sum$(EXE): sha1sum$(EXE)
-	cp $< $@
+	ln -f $< $@
 
 sha512sum$(EXE): sha1sum$(EXE)
-	cp $< $@
+	ln -f $< $@
 
-sha.cma: $(allshabytes)
-	$(OCAMLMKLIB) -o sha $(allshabytes)
+hash.cma: $(allbytes)
+	$(OCAMLMKLIB) -o hash $(allbytes)
 
-sha.cmxa: $(allshaopts)
-	$(OCAMLMKLIB) -o sha $(allshaopts)
+hash.cmxa: $(allopts)
+	$(OCAMLMKLIB) -o hash $(allopts)
 
-sha1.cma: sha1.cmi sha1.lib.$(OBJ) sha1_stubs.$(OBJ) sha1.cmo
-	$(OCAMLMKLIB) -o sha1 sha1.lib.$(OBJ) sha1_stubs.$(OBJ) sha1.cmo
+tests: hash_test
+	./hash_test
 
-sha1.cmxa: sha1.cmi sha1.lib.$(OBJ) sha1_stubs.$(OBJ) sha1.cmx
-	$(OCAMLMKLIB) -o sha1 sha1.lib.$(OBJ) sha1_stubs.$(OBJ) sha1.cmx
-
-sha256.cma: sha256.cmi sha256.lib.$(OBJ) sha256_stubs.$(OBJ) sha256.cmo
-	$(OCAMLMKLIB) -o sha256 sha256.lib.$(OBJ) sha256_stubs.$(OBJ) sha256.cmo
-
-sha256.cmxa: sha256.cmi sha256.lib.$(OBJ) sha256_stubs.$(OBJ) sha256.cmx
-	$(OCAMLMKLIB) -o sha256 sha256.lib.$(OBJ) sha256_stubs.$(OBJ) sha256.cmx
-
-sha512.cma: sha512.cmi sha512.lib.$(OBJ) sha512_stubs.$(OBJ) sha512.cmo
-	$(OCAMLMKLIB) -o sha512 sha512.lib.$(OBJ) sha512_stubs.$(OBJ) sha512.cmo
-
-sha512.cmxa: sha512.cmi sha512.lib.$(OBJ) sha512_stubs.$(OBJ) sha512.cmx
-	$(OCAMLMKLIB) -o sha512 sha512.lib.$(OBJ) sha512_stubs.$(OBJ) sha512.cmx
-
-tests: sha.test
-	./sha.test
-
-sha.test: sha1.cmxa sha256.cmxa sha512.cmxa sha.test.cmx
-
-%.test:
-	$(OCAMLOPT) -o $@ $(OCAML_BFLAGS) unix.cmxa $(OCAML_TEST_INC) $(OCAML_TEST_LIB) $+
-
-%.test.cmo: %.test.ml
-	$(OCAMLC) -c -o $@ $(OCAML_BFLAGS) -custom $(OCAML_TEST_INC) $<
-
-%.test.cmx: %.test.ml
-	$(OCAMLOPT) -c -o $@ $(OCAML_BFLAGS) $(OCAML_TEST_INC) $<
-
-%.cmo: %.ml
+%.cmo: %.ml %.cmi
 	$(OCAMLC) -c -o $@ $<
 
 %.cmi: %.mli
 	$(OCAMLC) -c -o $@ $<
 
 %.cmx: %.ml
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -c -o $@ $<
+	$(OCAMLOPT) -c -o $@ $<
 
 %.$(OBJ): %.c
 	$(OCAMLC) -ccopt "$(CFLAGS)" -c -o $@ $<
@@ -102,10 +77,10 @@ doc:
 	ocamldoc -html -d html *.mli
 
 clean:
-	rm -f *.$(OBJ) *.$(A) *.$(SO) *.cmo *.cmi *.cma *.cmx *.cmxa sha.test $(PROGRAMS)
+	rm -f *.$(OBJ) *.$(A) *.$(SO) *.cmo *.cmi *.cma *.cmx *.cmxa *.cmt *.cmti hash_test $(PROGRAMS)
 
-install: sha1.cma sha1.cmxa sha256.cma sha256.cmxa sha512.cma sha512.cmxa sha.cma sha.cmxa META
-	ocamlfind install sha META *.cmx sha1.cmi sha1.cma sha1.cmxa sha256.cmi sha256.cma sha256.cmxa sha512.cmi sha512.cma sha512.cmxa sha.cma sha.cmxa *.$(A) *.$(SO)
+install: hash.cma hash.cmxa META
+	ocamlfind install sha META hash.cm* *.$(A) *.$(SO)
 
 uninstall:
 	ocamlfind remove sha

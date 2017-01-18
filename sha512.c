@@ -35,14 +35,6 @@ void sha512_init(struct sha512_ctx *ctx)
 	ctx->h[7] = 0x5be0cd19137e2179ULL;
 }
 
-/**
- * sha512_copy - Copy SHA512 context
- */
-void sha512_copy(struct sha512_ctx *dst, struct sha512_ctx *src)
-{
-	memcpy(dst, src, sizeof(*dst));
-}
-
 /* 232 times the cube root of the first 64 primes 2..311 */
 static const uint64_t k[] = {
 	0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL, 0xb5c0fbcfec4d3b2fULL,
@@ -214,30 +206,4 @@ void sha512_finalize(struct sha512_ctx *ctx, sha512_digest *out)
 	/* store to digest */
 	for (i = 0; i < 8; i++)
 		out->digest[i] = cpu_to_be64(ctx->h[i]);
-}
-
-/**
- * sha512_to_bin - Transform the SHA512 digest into a binary data
- */
-void sha512_to_bin(sha512_digest *digest, char *out)
-{
-	uint64_t *ptr = (uint64_t *) out;
-	int i;
-
-	for (i = 0; i < 8; i++)
-		ptr[i] = digest->digest[i];
-}
-
-
-/**
- * sha512_to_hex - Transform the SHA512 digest into a readable data
- */
-void sha512_to_hex(sha512_digest *digest, char *out)
-{
-	char *p;
-	int i;
-
-	for (p = out, i = 0; i < 8; i++, p += 16)
-		snprintf(p, 17, "%016llx",
-		         (unsigned long long) be64_to_cpu(digest->digest[i]));
 }

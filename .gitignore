@@ -6,3 +6,12 @@
 *.cmxa
 *.cmo
 *.cma
+*.cmt
+*.cmti
+
+*.cache
+md5sum
+sha1sum
+sha256sum
+sha512sum
+hash_test

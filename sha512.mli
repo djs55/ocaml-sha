@@ -18,7 +18,7 @@
 type ctx
 
 (** buffer type *)
-type buf = (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+type buf = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
 (** digest type - opaque *)
 type t
@@ -50,7 +50,7 @@ external update_buffer: ctx -> buf -> unit = "stub_sha512_update_bigarray"
 external finalize: ctx -> t = "stub_sha512_finalize"
 
 (** Return an copy of the context *)
-external copy : ctx -> ctx = "stub_sha512_copy"
+val copy: ctx -> ctx
 
 (** Return the digest of the given string. *)
 val string : string -> t
