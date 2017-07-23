@@ -57,7 +57,7 @@ let buffer buf =
 
 let channel chan len =
 	let ctx = init ()
-	and buf = String.create blksize in
+	and buf = Bytes.create blksize in
 
 	let left = ref len and eof = ref false in
 	while (!left == -1 || !left > 0) && not !eof
