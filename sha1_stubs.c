@@ -16,6 +16,7 @@
 #define _GNU_SOURCE
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 #include "sha1.h"
 
 static inline int sha1_file(char *filename, sha1_digest *digest)
