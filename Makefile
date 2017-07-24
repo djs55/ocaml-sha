@@ -19,7 +19,7 @@ ifeq "$(shell ocamlc -config | fgrep 'ccomp_type:')" "ccomp_type: msvc"
 endif
 endif
 
-OCAMLOPTFLAGS =
+OCAMLOPTFLAGS = -w A
 
 OCAML_TEST_INC = -I `ocamlfind query oUnit` -I .
 OCAML_TEST_LIB = `ocamlfind query oUnit`/oUnit.cmxa
