@@ -21,7 +21,7 @@ endif
 
 OCAMLOPTFLAGS =
 
-OCAML_TEST_INC = -I `ocamlfind query oUnit`
+OCAML_TEST_INC = -I `ocamlfind query oUnit` -I .
 OCAML_TEST_LIB = `ocamlfind query oUnit`/oUnit.cmxa
 
 PROGRAMS_BINS = sha1sum sha256sum sha512sum
@@ -73,13 +73,13 @@ tests: sha.test
 sha.test: sha1.cmxa sha256.cmxa sha512.cmxa sha.test.cmx
 
 %.test:
-	$(OCAMLOPT) -o $@ $(OCAML_BFLAGS) unix.cmxa $(OCAML_TEST_INC) $(OCAML_TEST_LIB) $+
+	ocamlfind $(OCAMLOPT) -linkpkg -package oUnit -o $@ $(OCAMLOPTFLAGS) $(OCAML_TEST_INC) $(OCAML_TEST_LIB) $+
 
 %.test.cmo: %.test.ml
 	$(OCAMLC) -c -o $@ $(OCAML_BFLAGS) -custom $(OCAML_TEST_INC) $<
 
 %.test.cmx: %.test.ml
-	$(OCAMLOPT) -c -o $@ $(OCAML_BFLAGS) $(OCAML_TEST_INC) $<
+	$(OCAMLOPT) -c -o $@ $(OCAMLOPTFLAGS) $(OCAML_TEST_INC) $<
 
 %.cmo: %.ml
 	$(OCAMLC) -c -o $@ $<
