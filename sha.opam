@@ -1,0 +1,8 @@
+opam-version: "1.2"
+maintainer: "dave@recoil.org"
+homepage: "https://github.com/djs55/ocaml-sha"
+build: make
+remove: [["ocamlfind" "remove" "sha"]]
+depends: ["ocamlfind"]
+dev-repo: "git://github.com/djs55/ocaml-sha"
+install: [make "install"]
