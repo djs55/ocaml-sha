@@ -14,7 +14,7 @@
  *)
 
 type ctx
-type buf = (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+type buf = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 type t
 
 external init: unit -> ctx = "stub_sha1_init"
@@ -58,7 +58,7 @@ let buffer buf =
 
 let channel chan len =
 	let ctx = init ()
-	and buf = String.create blksize in
+	and buf = Bytes.create blksize in
 
 	let left = ref len and eof = ref false in
 	while (!left == -1 || !left > 0) && not !eof
@@ -68,7 +68,10 @@ let channel chan len =
 		if readed = 0 then
 			eof := true
 		else (
+                        let buf = Bytes.unsafe_to_string buf in
 			unsafe_update_substring ctx buf 0 readed;
+                        (* [unsafe_update_substring] does not hold on to [buf],
+                           so we can mutate it again now *)
 			if !left <> -1 then left := !left - readed
 		)
 	done;
