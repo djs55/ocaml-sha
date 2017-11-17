@@ -1,4 +1,3 @@
-CFLAGS = -Wall -O3 -funroll-loops -I/usr/include
 OCAMLC = ocamlc
 OCAMLOPT = ocamlopt
 OCAMLMKLIB = ocamlmklib
@@ -17,6 +16,8 @@ ifeq "$(shell ocamlc -config | fgrep 'ccomp_type:')" "ccomp_type: msvc"
 	OBJ=obj
 	A=lib
 endif
+else
+CFLAGS = -Wall -O3 -funroll-loops -I/usr/include
 endif
 
 OCAMLOPTFLAGS =

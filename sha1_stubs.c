@@ -14,7 +14,13 @@
  */
 
 #define _GNU_SOURCE
+#ifdef _WIN32
+#include <basetsd.h>
+typedef SSIZE_T ssize_t;
+#define O_CLOEXEC _O_NOINHERIT
+#else
 #include <unistd.h>
+#endif
 #include <fcntl.h>
 #include "sha1.h"
 
@@ -105,6 +111,10 @@ CAMLprim value stub_sha1_copy(value ctx)
 
 	CAMLreturn(result);
 }
+
+#ifdef _WIN32
+#define alloca _alloca
+#endif
 
 #ifndef strdupa
 #define strdupa(s) strcpy(alloca(strlen(s)+1),s)
