@@ -10,10 +10,8 @@ bug-reports:  "https://github.com/djs55/ocaml-sha/issues"
 dev-repo:     "https://github.com/djs55/ocaml-sha.git"
 license:      "ISC"
 
-build: make
-install: [make "install"]
-remove: [["ocamlfind" "remove" "sha"]]
+build: [["jbuilder" "build" "-p" name "-j" jobs]]
 
-depends: ["ocamlfind"]
+depends: ["jbuilder" {build & >= "1.0+beta13"}]
 
 available: [ ocaml-version >= "4.02.0" ]

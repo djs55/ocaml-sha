@@ -56,14 +56,14 @@ let ex_files_sha512 =
 	"da82cac10002a838aceedc7910b76735ec87b2dce08755680910b8ff287c0f48a1910989f8e3a94f9cb5a391e66d811d190bc3568135514229051c06c6e93f6e") ]
 
 let ex_channels_sha1 =
-	[ ("sha.test.ml", "e13052afa4916d56994378f847f157596f9638a2") ]
+	[ ("shatest.ml", "e13052afa4916d56994378f847f157596f9638a2") ]
 
 let ex_channels_sha256 =
-	[ ("sha.test.ml",
+	[ ("shatest.ml",
 	"51598a80bbec8fdcb32c3d180c3e806bf09eb0f5b5bb6f51031a78f46c83caef") ]
 
 let ex_channels_sha512 =
-	[ ("sha.test.ml",
+	[ ("shatest.ml",
 	"2f8e603774643ce152620e1dd94601393e78d33a3e6f67b86df2ef87eb4ad0cde72b481208eaa0249bbcf64072f2fb03b06abd006c5213c7546936ae9e9a1dc1") ]
 
 let stringfct_sha1 s = Sha1.to_hex (Sha1.string s)

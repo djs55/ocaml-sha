@@ -1,0 +1,31 @@
+lib: [
+  "_build/install/default/lib/sha/META" {"META"}
+  "_build/install/default/lib/sha/opam" {"opam"}
+  "_build/install/default/lib/sha/sha1.cmi"
+  "_build/install/default/lib/sha/sha1.cmx"
+  "_build/install/default/lib/sha/sha1.cmt"
+  "_build/install/default/lib/sha/sha1.cmti"
+  "_build/install/default/lib/sha/sha1.mli"
+  "_build/install/default/lib/sha/sha256.cmi"
+  "_build/install/default/lib/sha/sha256.cmx"
+  "_build/install/default/lib/sha/sha256.cmt"
+  "_build/install/default/lib/sha/sha256.cmti"
+  "_build/install/default/lib/sha/sha256.mli"
+  "_build/install/default/lib/sha/sha512.cmi"
+  "_build/install/default/lib/sha/sha512.cmx"
+  "_build/install/default/lib/sha/sha512.cmt"
+  "_build/install/default/lib/sha/sha512.cmti"
+  "_build/install/default/lib/sha/sha512.mli"
+  "_build/install/default/lib/sha/sha.cma"
+  "_build/install/default/lib/sha/libsha_stubs.a"
+  "_build/install/default/lib/sha/sha.cmxa"
+  "_build/install/default/lib/sha/sha.a"
+  "_build/install/default/lib/sha/sha.cmxs"
+]
+doc: [
+  "_build/install/default/doc/sha/README"
+  "_build/install/default/doc/sha/CHANGES.md"
+]
+stublibs: [
+  "_build/install/default/lib/stublibs/dllsha_stubs.so"
+]

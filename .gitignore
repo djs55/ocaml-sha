@@ -1,8 +1,2 @@
-*.a
-*.o
-*.so
-*.cmi
-*.cmx
-*.cmxa
-*.cmo
-*.cma
+_build
+.merlin
