@@ -25,6 +25,7 @@ typedef SSIZE_T ssize_t;
 #include <unistd.h>
 #endif
 #include <fcntl.h>
+#include <string.h>
 #include "sha1.h"
 
 static inline int sha1_file(char *filename, sha1_digest *digest)
