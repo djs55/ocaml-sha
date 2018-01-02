@@ -24,6 +24,7 @@ lib: [
 ]
 doc: [
   "_build/install/default/doc/sha/README"
+  "_build/install/default/doc/sha/LICENSE.md"
   "_build/install/default/doc/sha/CHANGES.md"
 ]
 stublibs: [

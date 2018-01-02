@@ -1,5 +1,5 @@
 all:
-	jbuilder build @install
+	jbuilder build --dev @install
 
 test:
 	jbuilder runtest

@@ -39,8 +39,6 @@ let update_substring ctx s ofs len =
 let update_string ctx s =
 	unsafe_update_substring ctx s 0 (String.length s)
 
-external update_bigarray: ctx -> (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t -> unit = "stub_sha256_update_bigarray"
-
 let string s =
 	let ctx = init () in
 	unsafe_update_substring ctx s 0 (String.length s);
