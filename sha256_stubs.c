@@ -24,6 +24,7 @@ typedef SSIZE_T ssize_t;
 #else
 #include <unistd.h>
 #endif
+#include <string.h>
 #include <fcntl.h>
 #include <string.h>
 #include "sha256.h"
@@ -86,12 +87,15 @@ CAMLprim value stub_sha256_update(value ctx, value data, value ofs, value len)
 CAMLprim value stub_sha256_update_bigarray(value ctx, value buf)
 {
 	CAMLparam2(ctx, buf);
+	struct sha256_ctx ctx_dup;
 	unsigned char *data = Data_bigarray_val(buf);
 	size_t len = Bigarray_val(buf)->dim[0];
 
+	ctx_dup = *GET_CTX_STRUCT(ctx);
 	caml_release_runtime_system();
-	sha256_update(GET_CTX_STRUCT(ctx), data, len);
+	sha256_update(&ctx_dup, data, len);
 	caml_acquire_runtime_system();
+	*GET_CTX_STRUCT(ctx) = ctx_dup;
 
 	CAMLreturn(Val_unit);
 }
