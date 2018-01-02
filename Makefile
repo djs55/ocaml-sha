@@ -1,4 +1,4 @@
-CFLAGS = -Wall -O3 -funroll-loops
+CFLAGS = -Wall -O3 -funroll-loops -fPIC -DPIC
 OCAMLC = ocamlc
 OCAMLOPT = ocamlopt
 OCAMLMKLIB = ocamlmklib
