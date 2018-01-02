@@ -1,4 +1,4 @@
-CFLAGS = -Wall -O3 -funroll-loops -I/usr/include
+CFLAGS = -Wall -O3 -funroll-loops
 OCAMLC = ocamlc
 OCAMLOPT = ocamlopt
 OCAMLMKLIB = ocamlmklib
