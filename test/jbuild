@@ -10,9 +10,7 @@
   (modules (shatest))
   (libraries (sha ounit))))
 
-(rule (copy ../README README))
-
 (alias
  ((name runtest)
-  (deps (shatest.exe README))
+  (deps (shatest.exe sample.txt))
   (action (run ${<}))))
