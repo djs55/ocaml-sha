@@ -1,25 +1,25 @@
 description="SHA-1 and SHA-2 family implementations"
-version="1.9"
+version="1.11"
 archive(byte)="sha.cma"
 archive(native)="sha.cmxa"
 
 package "sha1" (
   description="SHA-1 Implementation"
-  version="1.9"
+  version="1.11"
   archive(byte)="sha1.cma"
   archive(native)="sha1.cmxa"
 )
 
 package "sha256" (
   description="SHA-256 Implementation"
-  version="1.9"
+  version="1.11"
   archive(byte)="sha256.cma"
   archive(native)="sha256.cmxa"
 )
 
 package "sha512" (
   description="SHA-512 Implementation"
-  version="1.9"
+  version="1.11"
   archive(byte)="sha512.cma"
   archive(native)="sha512.cmxa"
 )
