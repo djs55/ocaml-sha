@@ -17,7 +17,13 @@
  */
 
 #define _GNU_SOURCE
+#ifdef _MSC_VER
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#define alloca _alloca
+#else
 #include <unistd.h>
+#endif
 #include <fcntl.h>
 #include "sha512.h"
 
