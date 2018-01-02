@@ -15,3 +15,5 @@ uninstall:
 
 clean:
 	jbuilder clean
+
+.PHONY: all test doc install uninstall clean

@@ -1,0 +1,18 @@
+(jbuild_version 1)
+
+(executable
+ ((name shasum)
+  (modules (shasum))
+  (libraries (sha))))
+
+(executable
+ ((name shatest)
+  (modules (shatest))
+  (libraries (sha ounit))))
+
+(rule (copy ../README README))
+
+(alias
+ ((name runtest)
+  (deps (shatest.exe README))
+  (action (run ${<}))))
