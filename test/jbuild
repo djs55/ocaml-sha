@@ -8,7 +8,7 @@
 (executable
  ((name shatest)
   (modules (shatest))
-  (libraries (sha ounit))))
+  (libraries (sha oUnit))))
 
 (alias
  ((name runtest)
