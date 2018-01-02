@@ -54,11 +54,6 @@ let substring s ofs len =
 	unsafe_update_substring ctx s ofs len;
 	finalize ctx
 
-let buffer buf =
-	let ctx = init () in
-	update_buffer ctx buf;
-	finalize ctx
-
 let channel chan len =
 	let ctx = init ()
 	and buf = Bytes.create blksize in

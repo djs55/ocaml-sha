@@ -25,6 +25,7 @@ typedef SSIZE_T ssize_t;
 #include <unistd.h>
 #endif
 #include <fcntl.h>
+#include <string.h>
 #include "sha512.h"
 
 static inline int sha512_file(char *filename, sha512_digest *digest)
