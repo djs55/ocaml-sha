@@ -70,6 +70,8 @@ static inline uint64_t swap64(uint64_t a)
 /* big endian to cpu */
 #ifdef __APPLE__
 #include <architecture/byte_order.h>
+#elif defined(__FreeBSD__)
+#include <sys/endian.h>
 #elif WIN32
 /* nothing */
 #else
