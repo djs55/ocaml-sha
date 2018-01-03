@@ -32,59 +32,59 @@ external file_fast: string -> t = "stub_sha1_file"
 let blksize = 4096
 
 let update_substring ctx s ofs len =
-	if len <= 0 && String.length s < ofs + len then
-		invalid_arg "substring";
-	unsafe_update_substring ctx s ofs len
+  if len <= 0 && String.length s < ofs + len then
+    invalid_arg "substring";
+  unsafe_update_substring ctx s ofs len
 
 let update_string ctx s =
-	unsafe_update_substring ctx s 0 (String.length s)
+  unsafe_update_substring ctx s 0 (String.length s)
 
 
 let string s =
-	let ctx = init () in
-	unsafe_update_substring ctx s 0 (String.length s);
-	finalize ctx
+  let ctx = init () in
+  unsafe_update_substring ctx s 0 (String.length s);
+  finalize ctx
 
 let zero = string ""
 
 let substring s ofs len =
-	if len <= 0 && String.length s < ofs + len then
-		invalid_arg "substring";
-	let ctx = init () in
-	unsafe_update_substring ctx s ofs len;
-	finalize ctx
+  if len <= 0 && String.length s < ofs + len then
+    invalid_arg "substring";
+  let ctx = init () in
+  unsafe_update_substring ctx s ofs len;
+  finalize ctx
 
 let channel chan len =
-	let ctx = init ()
-	and buf = Bytes.create blksize in
+  let ctx = init ()
+  and buf = Bytes.create blksize in
 
-	let left = ref len and eof = ref false in
-	while (!left == -1 || !left > 0) && not !eof
-	do
-		let len = if !left < 0 then blksize else (min !left blksize) in
-		let readed = Pervasives.input chan buf 0 len in
-		if readed = 0 then
-			eof := true
-		else (
-                        let buf = Bytes.unsafe_to_string buf in
-			unsafe_update_substring ctx buf 0 readed;
-                        (* [unsafe_update_substring] does not hold on to [buf],
-                           so we can mutate it again now *)
-			if !left <> -1 then left := !left - readed
-		)
-	done;
-	if !left > 0 && !eof then
-		raise End_of_file;
-	finalize ctx
+  let left = ref len and eof = ref false in
+  while (!left == -1 || !left > 0) && not !eof
+  do
+    let len = if !left < 0 then blksize else (min !left blksize) in
+    let readed = Pervasives.input chan buf 0 len in
+    if readed = 0 then
+      eof := true
+    else (
+      let buf = Bytes.unsafe_to_string buf in
+      unsafe_update_substring ctx buf 0 readed;
+      (* [unsafe_update_substring] does not hold on to [buf],
+         so we can mutate it again now *)
+      if !left <> -1 then left := !left - readed
+    )
+  done;
+  if !left > 0 && !eof then
+    raise End_of_file;
+  finalize ctx
 
 let file name =
-	let chan = open_in_bin name in
-	let digest = channel chan (-1) in
-	close_in chan;
-	digest
+  let chan = open_in_bin name in
+  let digest = channel chan (-1) in
+  close_in chan;
+  digest
 
 let input chan =
-	channel chan (-1)
+  channel chan (-1)
 
 let output chan digest =
-	output_string chan (to_hex digest)
+  output_string chan (to_hex digest)
