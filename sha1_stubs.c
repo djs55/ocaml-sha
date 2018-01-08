@@ -28,9 +28,10 @@ typedef SSIZE_T ssize_t;
 #include <string.h>
 #include "sha1.h"
 
+#define BLKSIZE 4096
+
 static inline int sha1_file(char *filename, sha1_digest *digest)
 {
-	#define BLKSIZE 4096
 	unsigned char buf[BLKSIZE];
 	int fd; ssize_t n;
 	struct sha1_ctx ctx;
@@ -49,7 +50,6 @@ static inline int sha1_file(char *filename, sha1_digest *digest)
 		sha1_finalize(&ctx, digest);
 	close(fd);
 	return n < 0;
-	#undef BLKSIZE
 }
 
 /* this part implement the OCaml binding */
@@ -78,8 +78,8 @@ CAMLprim value stub_sha1_update(value ctx, value data, value ofs, value len)
 {
 	CAMLparam4(ctx, data, ofs, len);
 
-	sha1_update(GET_CTX_STRUCT(ctx), (unsigned char *) data + Int_val(ofs),
-	            Int_val(len));
+	sha1_update(GET_CTX_STRUCT(ctx), (unsigned char *) data + Long_val(ofs),
+	            Long_val(len));
 
 	CAMLreturn(Val_unit);
 }
@@ -100,6 +100,55 @@ CAMLprim value stub_sha1_update_bigarray(value ctx, value buf)
 	CAMLreturn(Val_unit);
 }
 
+CAMLprim value stub_sha1_update_fd(value ctx, value fd, value len)
+{
+	CAMLparam3(ctx, fd, len);
+
+	char buf[BLKSIZE];
+
+	struct sha1_ctx ctx_dup = *GET_CTX_STRUCT(ctx);
+
+	long ret, rest = Long_val(len);
+
+	caml_release_runtime_system();
+	do {
+	    ret = rest < sizeof(buf) ? rest : sizeof(buf);
+	    ret = read(Long_val(fd), buf, ret);
+	    if (ret <= 0) break;
+	    rest -= ret;
+	    sha1_update(&ctx_dup, buf, ret);
+	} while (ret > 0 && rest > 0);
+	caml_acquire_runtime_system();
+
+	if (ret < 0)
+	    caml_failwith("read error");
+
+	*GET_CTX_STRUCT(ctx) = ctx_dup;
+	CAMLreturn(Val_long(Long_val(len) - rest));
+}
+
+CAMLprim value stub_sha1_file(value name)
+{
+	CAMLparam1(name);
+	CAMLlocal1(result);
+
+	sha1_digest digest;
+	const int len = caml_string_length(name);
+	char *name_dup = alloca(len);
+	memcpy(name_dup, String_val(name), len);
+	name_dup[len] = '\0';
+
+	caml_release_runtime_system();
+	if (sha1_file(name_dup, &digest)) {
+	    caml_acquire_runtime_system();
+	    caml_failwith("file error");
+	}
+	caml_acquire_runtime_system();
+	result = caml_alloc_string(sizeof(digest));
+	memcpy(String_val(result), &digest, sizeof(digest));
+
+	CAMLreturn(result);
+}
 
 CAMLprim value stub_sha1_finalize(value ctx)
 {

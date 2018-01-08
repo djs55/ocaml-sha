@@ -14,3 +14,8 @@
  ((name runtest)
   (deps (shatest.exe sample.txt))
   (action (run ${<}))))
+
+(executable
+ ((name bench)
+  (modules (bench))
+  (libraries (sha benchmark))))

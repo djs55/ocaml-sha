@@ -44,6 +44,10 @@ sig
       Runs parallel to other threads if any exist. *)
   val update_buffer: ctx -> buf -> unit
 
+  val update_fd: ctx -> Unix.file_descr -> int -> int
+
+  val file_fast: string -> t
+
   (** Finalize the context and return digest *)
   val finalize: ctx -> t
 end
@@ -87,7 +91,7 @@ sig
   val file : string -> t
 
   (** Return the digest of the file whose name is given using fast C function *)
-  val file_fast : string -> t
+  val file_unbuffered : string -> t
 
   (** Write a digest on the given output channel. *)
   val output : out_channel -> t -> unit
@@ -158,8 +162,12 @@ struct
       close_in chan;
       digest
 
-    (* TODO *)
-    let file_fast = file
+    let file_unbuffered name =
+      let fd = Unix.(openfile name [O_RDONLY; O_CLOEXEC] 0) in
+      let ctx = init () in
+      while update_fd ctx fd max_int > 0 do () done;
+      Unix.close fd;
+      finalize ctx
 
     let to_hex digest =
       let bin = to_bin digest in

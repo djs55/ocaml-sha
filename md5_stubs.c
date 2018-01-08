@@ -22,10 +22,39 @@
 #include <caml/alloc.h>
 #include <caml/bigarray.h>
 #include <caml/threads.h>
+#include <caml/fail.h>
+
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
 
 #include "md5.h"
 
 #define GET_CTX_STRUCT(a) ((struct MD5Context *) a)
+
+#define BLKSIZE 4096
+
+static inline int md5_file(char *filename, unsigned char *digest)
+{
+	unsigned char buf[BLKSIZE];
+	int fd; ssize_t n;
+	struct MD5Context ctx;
+
+#ifdef WIN32
+	fd = open(filename, O_RDONLY);
+#else
+	fd = open(filename, O_RDONLY | O_CLOEXEC);
+#endif
+	if (fd == -1)
+		return 1;
+	caml_MD5Init(&ctx);
+	while ((n = read(fd, buf, BLKSIZE)) > 0)
+		caml_MD5Update(&ctx, buf, n);
+	if (n == 0)
+		caml_MD5Final(digest, &ctx);
+	close(fd);
+	return n < 0;
+}
 
 CAMLprim value stub_md5_init(value unit)
 {
@@ -40,7 +69,7 @@ CAMLprim value stub_md5_init(value unit)
 CAMLprim value stub_md5_update(value ctx, value data, value ofs, value len)
 {
 	caml_MD5Update(GET_CTX_STRUCT(ctx),
-		(unsigned char *) data + Int_val(ofs), Int_val(len));
+		(unsigned char *) data + Long_val(ofs), Long_val(len));
 
 	return(Val_unit);
 }
@@ -58,6 +87,56 @@ CAMLprim value stub_md5_update_bigarray(value ctx, value buf)
 
 	*GET_CTX_STRUCT(ctx) = ctx_dup;
 	CAMLreturn(Val_unit);
+}
+
+CAMLprim value stub_md5_update_fd(value ctx, value fd, value len)
+{
+	CAMLparam3(ctx, fd, len);
+
+	char buf[BLKSIZE];
+
+	struct MD5Context ctx_dup = *GET_CTX_STRUCT(ctx);
+
+	long ret, rest = Long_val(len);
+
+	caml_release_runtime_system();
+	do {
+	    ret = rest < sizeof(buf) ? rest : sizeof(buf);
+	    ret = read(Long_val(fd), buf, ret);
+	    if (ret <= 0) break;
+	    rest -= ret;
+	    caml_MD5Update(&ctx_dup, buf, ret);
+	} while (ret > 0 && rest > 0);
+	caml_acquire_runtime_system();
+
+	if (ret < 0)
+	    caml_failwith("read error");
+
+	*GET_CTX_STRUCT(ctx) = ctx_dup;
+	CAMLreturn(Val_long(Long_val(len) - rest));
+}
+
+CAMLprim value stub_md5_file(value name)
+{
+	CAMLparam1(name);
+	CAMLlocal1(result);
+
+	unsigned char digest[16];
+	const int len = caml_string_length(name);
+	char *name_dup = alloca(len);
+	memcpy(name_dup, String_val(name), len);
+	name_dup[len] = '\0';
+
+	caml_release_runtime_system();
+	if (md5_file(name_dup, digest)) {
+	    caml_acquire_runtime_system();
+	    caml_failwith("file error");
+	}
+	caml_acquire_runtime_system();
+	result = caml_alloc_string(sizeof(digest));
+	memcpy(String_val(result), &digest, sizeof(digest));
+
+	CAMLreturn(result);
 }
 
 CAMLprim value stub_md5_finalize(value ctx)

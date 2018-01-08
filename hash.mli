@@ -45,6 +45,10 @@ module type Stubs =
         Runs parallel to other threads if any exist. *)
     val update_buffer: ctx -> buf -> unit
 
+    val update_fd: ctx -> Unix.file_descr -> int -> int
+
+    val file_fast : string -> t
+
     (** Finalize the context and return digest *)
     val finalize: ctx -> t
   end
@@ -88,7 +92,7 @@ module type S =
     val file : string -> t
 
     (** Return the digest of the file whose name is given using fast C function *)
-    val file_fast : string -> t
+    val file_unbuffered : string -> t
 
     (** Write a digest on the given output channel. *)
     val output : out_channel -> t -> unit

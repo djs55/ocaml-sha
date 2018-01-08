@@ -7,5 +7,7 @@ include Hash.Make (struct
     external init: unit -> ctx = "stub_sha1_init"
     external unsafe_update_substring: ctx -> string -> int -> int -> unit = "stub_sha1_update"
     external update_buffer: ctx -> Hash.buf -> unit = "stub_sha1_update_bigarray"
+    external update_fd: ctx -> Unix.file_descr -> int -> int = "stub_sha1_update_fd"
+    external file_fast: string -> t = "stub_sha1_file"
     external finalize: ctx -> t = "stub_sha1_finalize"
   end)
