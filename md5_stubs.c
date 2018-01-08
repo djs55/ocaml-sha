@@ -98,7 +98,7 @@ CAMLprim value stub_md5_update_fd(value ctx, value fd, value len)
 
 	struct MD5Context ctx_dup = *GET_CTX_STRUCT(ctx);
 
-	long ret, rest = Long_val(len);
+	intnat ret, rest = Long_val(len);
 
 	caml_release_runtime_system();
 	do {
