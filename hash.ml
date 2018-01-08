@@ -172,33 +172,33 @@ struct
     if !left > 0 && !eof then raise End_of_file;
     finalize ctx
 
-    let file name =
-      let chan = open_in_bin name in
-      let digest = channel chan (-1) in
-      close_in chan;
-      digest
+  let file name =
+    let chan = open_in_bin name in
+    let digest = channel chan (-1) in
+    close_in chan;
+    digest
 
-    let file_unbuffered name =
-      let fd = Unix.(openfile name [O_RDONLY; O_CLOEXEC] 0) in
-      let ctx = init () in
-      while update_fd ctx fd max_int > 0 do () done;
-      Unix.close fd;
-      finalize ctx
+  let file_unbuffered name =
+    let fd = Unix.(openfile name [O_RDONLY; O_CLOEXEC] 0) in
+    let ctx = init () in
+    while update_fd ctx fd max_int > 0 do () done;
+    Unix.close fd;
+    finalize ctx
 
-    let to_hex digest =
-      let bin = to_bin digest in
-      let hex = Bytes.create (String.length bin * 2) in
-      assert (String.length bin * 8 = digest_length);
-      let map = "0123456789abcdef" in
-      for i = 0 to String.length bin - 1 do
-        Bytes.set hex (2*i)   map.[int_of_char bin.[i] lsr 4];
-        Bytes.set hex (2*i+1) map.[int_of_char bin.[i] land 0x0f];
-      done;
-      Bytes.unsafe_to_string hex
+  let to_hex digest =
+    let bin = to_bin digest in
+    let hex = Bytes.create (String.length bin * 2) in
+    assert (String.length bin * 8 = digest_length);
+    let map = "0123456789abcdef" in
+    for i = 0 to String.length bin - 1 do
+      Bytes.set hex (2*i)   map.[int_of_char bin.[i] lsr 4];
+      Bytes.set hex (2*i+1) map.[int_of_char bin.[i] land 0x0f];
+    done;
+    Bytes.unsafe_to_string hex
 
-    let input chan =
-      channel chan (-1)
+  let input chan =
+    channel chan (-1)
 
-    let output chan digest =
-      output_string chan (to_hex digest)
-  end
+  let output chan digest =
+    output_string chan (to_hex digest)
+end
