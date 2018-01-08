@@ -36,14 +36,12 @@ module type Stubs =
     (** Create a new context *)
     val init: unit -> ctx
 
-    (** Sha1.unsafe_update_substring ctx s ofs len updates the context
+    (** unsafe_update_substring ctx s ofs len updates the context
         with the substring of s starting at character number ofs and
         containing len characters. Unsafe: No range checking! *)
     val unsafe_update_substring: ctx -> string -> int -> int -> unit
 
-    (** Sha1.update_buffer ctx a updates the context with a.
-        Runs parallel to other threads if any exist. *)
-    val update_buffer: ctx -> buf -> unit
+    val unsafe_update_bigstring: ctx -> buf -> int -> int -> unit
 
     val update_fd: ctx -> Unix.file_descr -> int -> int
 
@@ -60,13 +58,17 @@ module type S =
     (** The zero digest *)
     val zero : t
 
-    (** Sha1.update_substring ctx s ofs len updates the context with the
+    (** update_substring ctx s ofs len updates the context with the
         substring of s starting at character number ofs and containing len
         characters. *)
     val update_substring: ctx -> string -> int -> int -> unit
 
-    (** Sha1.update_string ctx s updates the context with s. *)
+    (** update_string ctx s updates the context with s. *)
     val update_string: ctx -> string -> unit
+
+    (** update_buffer ctx a updates the context with a.
+        Runs parallel to other threads if any exist. *)
+    val update_buffer: ctx -> buf -> unit
 
     (** Return an copy of the context *)
     val copy: ctx -> ctx
@@ -74,16 +76,16 @@ module type S =
     (** Return the digest of the given string. *)
     val string : string -> t
 
-    (** Sha1.substring s ofs len returns the digest of the substring of s starting
+    (** substring s ofs len returns the digest of the substring of s starting
         at character number ofs and containing len characters. *)
     val substring : string -> int -> int -> t
 
     (** Return the digest of the given buffer. *)
     val buffer : buf -> t
 
-    (** If len is nonnegative, Sha1.channel ic len reads len characters from
+    (** If len is nonnegative, channel ic len reads len characters from
         channel ic and returns their digest, or raises End_of_file if end-of-file is
-        reached before len characters are read. If len is negative, Sha1.channel ic
+        reached before len characters are read. If len is negative, channel ic
         len reads all characters from ic until end-of-file is reached and return their
         digest. *)
     val channel : in_channel -> int -> t

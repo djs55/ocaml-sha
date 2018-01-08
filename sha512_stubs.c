@@ -83,16 +83,17 @@ CAMLprim value stub_sha512_update(value ctx, value data, value ofs, value len)
 	CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_sha512_update_bigarray(value ctx, value buf)
+CAMLprim value stub_sha512_update_bigarray(value ctx, value buf, value pos, value len)
 {
-	CAMLparam2(ctx, buf);
+	CAMLparam4(ctx, buf, pos, len);
 	struct sha512_ctx ctx_dup;
 	unsigned char *data = Data_bigarray_val(buf);
-	size_t len = Bigarray_val(buf)->dim[0];
 
 	ctx_dup = *GET_CTX_STRUCT(ctx);
 	caml_release_runtime_system();
-	sha512_update(&ctx_dup, data, len);
+	sha512_update(&ctx_dup,
+		data + Long_val(pos),
+		Long_val(len));
 	caml_acquire_runtime_system();
 	*GET_CTX_STRUCT(ctx) = ctx_dup;
 

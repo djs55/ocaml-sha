@@ -40,9 +40,7 @@ sig
       containing len characters. Unsafe: No range checking! *)
   val unsafe_update_substring: ctx -> string -> int -> int -> unit
 
-  (** update_buffer ctx a updates the context with a.
-      Runs parallel to other threads if any exist. *)
-  val update_buffer: ctx -> buf -> unit
+  val unsafe_update_bigstring: ctx -> buf -> int -> int -> unit
 
   val update_fd: ctx -> Unix.file_descr -> int -> int
 
@@ -66,6 +64,10 @@ sig
 
   (** update_string ctx s updates the context with s. *)
   val update_string: ctx -> string -> unit
+
+  (** update_buffer ctx a updates the context with a.
+      Runs parallel to other threads if any exist. *)
+  val update_buffer: ctx -> buf -> unit
 
   (** Return an copy of the context *)
   val copy: ctx -> ctx
@@ -110,6 +112,8 @@ module Make(Stubs: Stubs) :S with type t = Stubs.t =
 struct
   include Stubs
 
+  module Bigstring = Bigarray.Array1
+
   let update_substring ctx s ofs len =
     if len <= 0 || String.length s < ofs + len then
       invalid_arg "substring";
@@ -131,6 +135,18 @@ struct
     let ctx = init () in
     update_substring ctx s ofs len;
     finalize ctx
+
+  let update_bigstring ctx ?(pos=0) ?len buf =
+    let len = match len with
+      | None -> Bigstring.dim buf - pos
+      | Some len -> len
+    in
+    if pos < 0 || len < 0 || pos + len >= Bigstring.dim buf
+    then invalid_arg "Hash.update_bigstring";
+    unsafe_update_bigstring ctx buf pos len
+
+  let update_buffer ctx buf =
+    unsafe_update_bigstring ctx buf 0 (Bigstring.dim buf)
 
   let buffer buf =
     let ctx = init () in

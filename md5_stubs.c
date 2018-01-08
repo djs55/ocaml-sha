@@ -74,15 +74,16 @@ CAMLprim value stub_md5_update(value ctx, value data, value ofs, value len)
 	return(Val_unit);
 }
 
-CAMLprim value stub_md5_update_bigarray(value ctx, value buf)
+CAMLprim value stub_md5_update_bigarray(value ctx, value buf, value pos, value len)
 {
-	CAMLparam2(ctx, buf);
+	CAMLparam4(ctx, buf, pos, len);
 	struct MD5Context ctx_dup = *GET_CTX_STRUCT(ctx);
 	unsigned char *data = Data_bigarray_val(buf);
-	size_t len = Bigarray_val(buf)->dim[0];
 
 	caml_release_runtime_system();
-	caml_MD5Update(&ctx_dup, data, len);
+	caml_MD5Update(&ctx_dup,
+		data + Long_val(pos),
+		Long_val(len));
 	caml_acquire_runtime_system();
 
 	*GET_CTX_STRUCT(ctx) = ctx_dup;
