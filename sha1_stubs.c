@@ -105,7 +105,7 @@ CAMLprim value stub_sha1_update_fd(value ctx, value fd, value len)
 {
 	CAMLparam3(ctx, fd, len);
 
-	char buf[BLKSIZE];
+	unsigned char buf[BLKSIZE];
 
 	struct sha1_ctx ctx_dup = *GET_CTX_STRUCT(ctx);
 
