@@ -17,6 +17,7 @@ build-test: [["jbuilder" "runtest" "-p" name]]
 depends: [
   "jbuilder" {build & >= "1.0+beta13"}
   "ounit" {test}
+  "benchmark" {test}
 ]
 
 available: [ ocaml-version >= "4.02.0" ]
