@@ -65,6 +65,8 @@ sig
   (** update_string ctx s updates the context with s. *)
   val update_string: ctx -> string -> unit
 
+  val update_bigstring: ctx -> ?pos:int -> ?len:int -> buf -> unit
+
   (** update_buffer ctx a updates the context with a.
       Runs parallel to other threads if any exist. *)
   val update_buffer: ctx -> buf -> unit
