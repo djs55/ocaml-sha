@@ -72,7 +72,7 @@ static inline uint64_t swap64(uint64_t a)
 #include <architecture/byte_order.h>
 #elif defined(__FreeBSD__)
 #include <sys/endian.h>
-#elif WIN32
+#elif _WIN32
 /* nothing */
 #else
 #include <endian.h>
