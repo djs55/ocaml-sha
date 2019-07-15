@@ -7,4 +7,4 @@
   (wrapped false)
   (modules (sha1 sha256 sha512))
   (c_flags (-Wall -O3 -funroll-loops)) ; Needs adapting for Windows
-  (c_names (sha1c sha1_stubs sha256c sha256_stubs sha512c sha512_stubs))))
+  (c_names (sha1_stubs sha256_stubs sha512_stubs))))
