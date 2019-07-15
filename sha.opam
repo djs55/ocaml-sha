@@ -10,13 +10,13 @@ bug-reports:  "https://github.com/djs55/ocaml-sha/issues"
 dev-repo:     "https://github.com/djs55/ocaml-sha.git"
 license:      "ISC"
 
-build: [["jbuilder" "build" "-p" name "-j" jobs]]
+build: [["dune" "build" "-p" name "-j" jobs]]
 
-build-test: [["jbuilder" "runtest" "-p" name]]
+build-test: [["dune" "runtest" "-p" name]]
 
 depends: [
-  "jbuilder" {build & >= "1.0+beta13"}
+  "dune" {build & >= "1.10"}
   "ounit" {test}
 ]
 
-available: [ ocaml-version >= "4.02.0" ]
+available: [ ocaml-version >= "4.02.3" ]
