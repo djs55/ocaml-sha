@@ -117,7 +117,7 @@ struct
   module Bigstring = Bigarray.Array1
 
   let update_substring ctx s ofs len =
-    if len <= 0 || String.length s < ofs + len then
+    if ofs < 0 || len < 0 || ofs + len > String.length s then
       invalid_arg "substring";
     unsafe_update_substring ctx s ofs len
 
@@ -143,7 +143,7 @@ struct
       | None -> Bigstring.dim buf - pos
       | Some len -> len
     in
-    if pos < 0 || len < 0 || pos + len >= Bigstring.dim buf
+    if pos < 0 || len < 0 || pos + len > Bigstring.dim buf
     then invalid_arg "Hash.update_bigstring";
     unsafe_update_bigstring ctx buf pos len
 
