@@ -8,7 +8,7 @@
  (modules shatest)
  (libraries sha oUnit))
 
-(alias
- (name runtest)
+(rule
+ (alias runtest)
  (deps sample.txt)
  (action (run ./shatest.exe)))

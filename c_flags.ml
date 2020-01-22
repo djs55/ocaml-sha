@@ -1,3 +1,7 @@
+let flags =
+  match Sys.win32 with
+  | true  -> "()"
+  | false -> "(-Wall -O3 -funroll-loops)"
+
 let () =
-  if Sys.win32 then ()
-  else print_endline "(-Wall -O3 -funroll-loops)"
+  print_endline flags

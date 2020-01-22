@@ -1,4 +1,4 @@
-(rule (with-stdout-to c_flags.sexp (run %{ocaml} c_flags.ml)))
+(rule (with-stdout-to c_flags.sexp (run %{ocaml} %{dep:c_flags.ml})))
 
 (library
  (name sha)
@@ -6,5 +6,8 @@
  (synopsis "SHA-1 and SHA-2 family implementations")
  (wrapped false)
  (modules sha1 sha256 sha512)
- (c_flags (:include c_flags.sexp))
- (c_names sha1_stubs sha256_stubs sha512_stubs))
+ (flags -warn-error -3)
+ (foreign_stubs
+  (language c)
+  (flags (:include c_flags.sexp))
+  (names sha1_stubs sha256_stubs sha512_stubs)))
