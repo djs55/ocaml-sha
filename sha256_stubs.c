@@ -36,7 +36,7 @@ static inline int sha256_file(char *filename, sha256_digest *digest)
 	int fd; ssize_t n;
 	struct sha256_ctx ctx;
 
-#ifdef WIN32
+#ifdef _WIN32
 	fd = open(filename, O_RDONLY);
 #else
 	fd = open(filename, O_RDONLY | O_CLOEXEC);

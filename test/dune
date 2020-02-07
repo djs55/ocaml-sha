@@ -1,0 +1,14 @@
+(executable
+ (name shasum)
+ (modules shasum)
+ (libraries sha))
+
+(executable
+ (name shatest)
+ (modules shatest)
+ (libraries sha oUnit))
+
+(rule
+ (alias runtest)
+ (deps sample.txt)
+ (action (run ./shatest.exe)))
