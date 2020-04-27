@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2006-2009 Vincent Hanquez <tab@snarc.org>
+ *	Copyright (c) 2017 Christopher Zimmermann <madroach@gmerlin.de>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,101 +13,90 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * SHA1 implementation as describe in wikipedia.
+ *
+ * md5 stub code linking to the md5 backend in the OCaml runtime.
  */
 
-#define _GNU_SOURCE
-#ifdef _MSC_VER
-#include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
-#define alloca _alloca
-#else
-#include <unistd.h>
-#endif
+#include <caml/mlvalues.h>
+#include <caml/memory.h>
+#include <caml/alloc.h>
+#include <caml/bigarray.h>
+#include <caml/threads.h>
+#include <caml/fail.h>
+
 #include <fcntl.h>
+#include <unistd.h>
 #include <string.h>
-#include "sha1.h"
+
+#include "md5.h"
+
+#define GET_CTX_STRUCT(a) ((struct MD5Context *) a)
 
 #define BLKSIZE 4096
 
-static inline int sha1_file(char *filename, sha1_digest *digest)
+static inline int md5_file(char *filename, unsigned char *digest)
 {
 	unsigned char buf[BLKSIZE];
 	int fd; ssize_t n;
-	struct sha1_ctx ctx;
+	struct MD5Context ctx;
 
-#ifndef O_CLOEXEC
+#ifdef WIN32
 	fd = open(filename, O_RDONLY);
 #else
 	fd = open(filename, O_RDONLY | O_CLOEXEC);
 #endif
 	if (fd == -1)
 		return 1;
-	sha1_init(&ctx);
+	caml_MD5Init(&ctx);
 	while ((n = read(fd, buf, BLKSIZE)) > 0)
-		sha1_update(&ctx, buf, n);
+		caml_MD5Update(&ctx, buf, n);
 	if (n == 0)
-		sha1_finalize(&ctx, digest);
+		caml_MD5Final(digest, &ctx);
 	close(fd);
 	return n < 0;
 }
 
-/* this part implement the OCaml binding */
-#include <caml/mlvalues.h>
-#include <caml/memory.h>
-#include <caml/alloc.h>
-#include <caml/custom.h>
-#include <caml/fail.h>
-#include <caml/bigarray.h>
-#include <caml/threads.h>
-
-#define GET_CTX_STRUCT(a) ((struct sha1_ctx *) a)
-
-CAMLexport value stub_sha1_init(value unit)
+CAMLprim value stub_md5_init(value unit)
 {
-	CAMLparam1(unit);
-	CAMLlocal1(result);
+	value ctx;
 
-	result = caml_alloc(sizeof(struct sha1_ctx), Abstract_tag);
-	sha1_init(GET_CTX_STRUCT(result));
+	ctx = caml_alloc_small(sizeof(struct MD5Context), Abstract_tag);
+	caml_MD5Init(GET_CTX_STRUCT(ctx));
 
-	CAMLreturn(result);
+	return(ctx);
 }
 
-CAMLprim value stub_sha1_update(value ctx, value data, value ofs, value len)
+CAMLprim value stub_md5_update(value ctx, value data, value ofs, value len)
 {
-	CAMLparam4(ctx, data, ofs, len);
+	caml_MD5Update(GET_CTX_STRUCT(ctx),
+		(unsigned char *) data + Long_val(ofs), Long_val(len));
 
-	sha1_update(GET_CTX_STRUCT(ctx), (unsigned char *) data + Long_val(ofs),
-	            Long_val(len));
-
-	CAMLreturn(Val_unit);
+	return(Val_unit);
 }
 
-CAMLprim value stub_sha1_update_bigarray(value ctx, value buf, value pos, value len)
+CAMLprim value stub_md5_update_bigarray(value ctx, value buf, value pos, value len)
 {
 	CAMLparam4(ctx, buf, pos, len);
-	struct sha1_ctx ctx_dup;
+	struct MD5Context ctx_dup = *GET_CTX_STRUCT(ctx);
 	unsigned char *data = Data_bigarray_val(buf);
 
-	ctx_dup = *GET_CTX_STRUCT(ctx);
 	caml_release_runtime_system();
-	sha1_update(&ctx_dup,
+	caml_MD5Update(&ctx_dup,
 		data + Long_val(pos),
 		Long_val(len));
 	caml_acquire_runtime_system();
-	*GET_CTX_STRUCT(ctx) = ctx_dup;
 
+	*GET_CTX_STRUCT(ctx) = ctx_dup;
 	CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_sha1_update_fd(value ctx, value fd, value len)
+CAMLprim value stub_md5_update_fd(value ctx, value fd, value len)
 {
 	CAMLparam3(ctx, fd, len);
 
 	unsigned char buf[BLKSIZE];
 
-	struct sha1_ctx ctx_dup = *GET_CTX_STRUCT(ctx);
+	struct MD5Context ctx_dup = *GET_CTX_STRUCT(ctx);
 
 	intnat ret, rest = Long_val(len);
 
@@ -117,7 +106,7 @@ CAMLprim value stub_sha1_update_fd(value ctx, value fd, value len)
 	    ret = read(Long_val(fd), buf, ret);
 	    if (ret <= 0) break;
 	    rest -= ret;
-	    sha1_update(&ctx_dup, buf, ret);
+	    caml_MD5Update(&ctx_dup, buf, ret);
 	} while (ret > 0 && rest > 0);
 	caml_acquire_runtime_system();
 
@@ -128,19 +117,19 @@ CAMLprim value stub_sha1_update_fd(value ctx, value fd, value len)
 	CAMLreturn(Val_long(Long_val(len) - rest));
 }
 
-CAMLprim value stub_sha1_file(value name)
+CAMLprim value stub_md5_file(value name)
 {
 	CAMLparam1(name);
 	CAMLlocal1(result);
 
-	sha1_digest digest;
+	unsigned char digest[16];
 	const int len = caml_string_length(name);
 	char *name_dup = alloca(len);
 	memcpy(name_dup, String_val(name), len);
 	name_dup[len] = '\0';
 
 	caml_release_runtime_system();
-	if (sha1_file(name_dup, &digest)) {
+	if (md5_file(name_dup, digest)) {
 	    caml_acquire_runtime_system();
 	    caml_failwith("file error");
 	}
@@ -151,13 +140,15 @@ CAMLprim value stub_sha1_file(value name)
 	CAMLreturn(result);
 }
 
-CAMLprim value stub_sha1_finalize(value ctx)
+CAMLprim value stub_md5_finalize(value ctx)
 {
 	CAMLparam1(ctx);
-	CAMLlocal1(result);
+	value result;
 
-	result = caml_alloc_string(20);
-	sha1_finalize(GET_CTX_STRUCT(ctx), (sha1_digest *) result);
+	result = caml_alloc_string(16);
+	caml_MD5Final(
+		(unsigned char *)Bp_val(result),
+		GET_CTX_STRUCT(ctx));
 
 	CAMLreturn(result);
 }

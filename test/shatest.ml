@@ -21,6 +21,15 @@ open OUnit
 let cog = "The quick brown fox jumps over the lazy cog"
 let dog = "The quick brown fox jumps over the lazy dog"
 
+let ex_strings_md5 = [
+	("",
+	"d41d8cd98f00b204e9800998ecf8427e");
+	("The quick brown fox jumps over the lazy cog",
+	"1055d3e698d289f2af8663725127bd4b");
+	("The quick brown fox jumps over the lazy dog",
+	"9e107d9d372bb6826bd81d3542a419d6");
+]
+
 let ex_strings_sha1 = [
 	("",
 	"da39a3ee5e6b4b0d3255bfef95601890afd80709");
@@ -46,6 +55,10 @@ let ex_strings_sha512 = [
 	"07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6"); ]
 
 
+let ex_files_md5 =
+	[ ("sample.txt",
+	"9e107d9d372bb6826bd81d3542a419d6") ]
+
 let ex_files_sha1 =
 	[ ("sample.txt",
 	"2fd4e1c67a2d28fced849ee1bb76e7391b93eb12") ]
@@ -58,6 +71,10 @@ let ex_files_sha512 =
 	[ ("sample.txt",
 	"07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6") ]
 
+
+let ex_channels_md5 =
+	[ ("sample.txt", "9e107d9d372bb6826bd81d3542a419d6") ]
+
 let ex_channels_sha1 =
 	[ ("sample.txt", "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12") ]
 
@@ -69,14 +86,17 @@ let ex_channels_sha512 =
 	[ ("sample.txt",
 	"07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6") ]
 
+let stringfct_md5 s = Md5.to_hex (Md5.string s)
 let stringfct_sha1 s = Sha1.to_hex (Sha1.string s)
 let stringfct_sha256 s = Sha256.to_hex (Sha256.string s)
 let stringfct_sha512 s = Sha512.to_hex (Sha512.string s)
 
-let filefct_sha1 s = Sha1.to_hex (Sha1.file s)
-let filefct_sha256 s = Sha256.to_hex (Sha256.file s)
-let filefct_sha512 s = Sha512.to_hex (Sha512.file s)
+let filefct_md5 s = Md5.to_hex (Md5.file_fast s)
+let filefct_sha1 s = Sha1.to_hex (Sha1.file_fast s)
+let filefct_sha256 s = Sha256.to_hex (Sha256.file_fast s)
+let filefct_sha512 s = Sha512.to_hex (Sha512.file_fast s)
 
+let channelfct_md5 s i = Md5.to_hex (Md5.channel s i)
 let channelfct_sha1 s i = Sha1.to_hex (Sha1.channel s i)
 let channelfct_sha256 s i = Sha256.to_hex (Sha256.channel s i)
 let channelfct_sha512 s i = Sha512.to_hex (Sha512.channel s i)
@@ -94,8 +114,14 @@ let test_channel channelfct arr _ =
 		close_in chan;
 		assert_equal r digest) arr
 
-let suite = "SHA binding test" >:::
-	[ "SHA1 example strings" >::
+let suite = "hash bindings test" >:::
+	[ "MD5 example strings" >::
+		test_strings stringfct_md5 ex_strings_md5;
+	  "MD5 reading a file" >::
+		test_file filefct_md5 ex_files_md5;
+	  "MD5 reading few byte from channel" >::
+		test_channel channelfct_md5 ex_channels_md5;
+          "SHA1 example strings" >::
 		test_strings stringfct_sha1 ex_strings_sha1;
 	  "SHA1 reading a file" >::
 		test_file filefct_sha1 ex_files_sha1;

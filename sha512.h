@@ -15,14 +15,12 @@
  *
  * SHA512 implementation
  */
-
 #ifndef SHA512_H
 #define SHA512_H
 
-#include <stdint.h>
 #include <string.h>
-#include <stdio.h>
 #include "bitfn.h"
+
 
 struct sha512_ctx
 {
@@ -48,14 +46,6 @@ static void sha512_init(struct sha512_ctx *ctx)
 	ctx->h[5] = 0x9b05688c2b3e6c1fULL;
 	ctx->h[6] = 0x1f83d9abfb41bd6bULL;
 	ctx->h[7] = 0x5be0cd19137e2179ULL;
-}
-
-/**
- * sha512_copy - Copy SHA512 context
- */
-static void sha512_copy(struct sha512_ctx *dst, struct sha512_ctx *src)
-{
-	memcpy(dst, src, sizeof(*dst));
 }
 
 /* 232 times the cube root of the first 64 primes 2..311 */
@@ -230,31 +220,4 @@ static void sha512_finalize(struct sha512_ctx *ctx, sha512_digest *out)
 	for (i = 0; i < 8; i++)
 		out->digest[i] = cpu_to_be64(ctx->h[i]);
 }
-
-/**
- * sha512_to_bin - Transform the SHA512 digest into a binary data
- */
-static void sha512_to_bin(sha512_digest *digest, char *out)
-{
-	uint64_t *ptr = (uint64_t *) out;
-	int i;
-
-	for (i = 0; i < 8; i++)
-		ptr[i] = digest->digest[i];
-}
-
-
-/**
- * sha512_to_hex - Transform the SHA512 digest into a readable data
- */
-static void sha512_to_hex(sha512_digest *digest, char *out)
-{
-	char *p;
-	int i;
-
-	for (p = out, i = 0; i < 8; i++, p += 16)
-		snprintf(p, 17, "%016llx",
-		         (unsigned long long) be64_to_cpu(digest->digest[i]));
-}
-
 #endif

@@ -5,9 +5,10 @@
  (public_name sha)
  (synopsis "SHA-1 and SHA-2 family implementations")
  (wrapped false)
- (modules sha1 sha256 sha512)
+ (libraries unix)
+ (modules hash md5 sha1 sha256 sha512)
  (flags -warn-error -3)
  (foreign_stubs
   (language c)
   (flags (:include c_flags.sexp))
-  (names sha1_stubs sha256_stubs sha512_stubs)))
+  (names md5_stubs sha1_stubs sha256_stubs sha512_stubs)))

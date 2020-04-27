@@ -24,14 +24,14 @@ typedef SSIZE_T ssize_t;
 #else
 #include <unistd.h>
 #endif
-#include <string.h>
 #include <fcntl.h>
 #include <string.h>
 #include "sha512.h"
 
+#define BLKSIZE 4096
+
 static inline int sha512_file(char *filename, sha512_digest *digest)
 {
-	#define BLKSIZE 4096
 	unsigned char buf[BLKSIZE];
 	int fd; ssize_t n;
 	struct sha512_ctx ctx;
@@ -50,7 +50,6 @@ static inline int sha512_file(char *filename, sha512_digest *digest)
 		sha512_finalize(&ctx, digest);
 	close(fd);
 	return n < 0;
-	#undef BLKSIZE
 }
 
 /* this part implement the OCaml binding */
@@ -80,59 +79,64 @@ CAMLprim value stub_sha512_update(value ctx, value data, value ofs, value len)
 	CAMLparam4(ctx, data, ofs, len);
 
 	sha512_update(GET_CTX_STRUCT(ctx), (unsigned char *) data
-	                                   + Int_val(ofs), Int_val(len));
+	                                   + Long_val(ofs), Long_val(len));
 	CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_sha512_update_bigarray(value ctx, value buf)
+CAMLprim value stub_sha512_update_bigarray(value ctx, value buf, value pos, value len)
 {
-	CAMLparam2(ctx, buf);
+	CAMLparam4(ctx, buf, pos, len);
 	struct sha512_ctx ctx_dup;
 	unsigned char *data = Data_bigarray_val(buf);
-	size_t len = Bigarray_val(buf)->dim[0];
 
 	ctx_dup = *GET_CTX_STRUCT(ctx);
 	caml_release_runtime_system();
-	sha512_update(&ctx_dup, data, len);
+	sha512_update(&ctx_dup,
+		data + Long_val(pos),
+		Long_val(len));
 	caml_acquire_runtime_system();
 	*GET_CTX_STRUCT(ctx) = ctx_dup;
 
 	CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_sha512_finalize(value ctx)
+CAMLprim value stub_sha512_update_fd(value ctx, value fd, value len)
 {
-	CAMLparam1(ctx);
-	CAMLlocal1(result);
+	CAMLparam3(ctx, fd, len);
 
-	result = caml_alloc(sizeof(sha512_digest), Abstract_tag);
-	sha512_finalize(GET_CTX_STRUCT(ctx), (sha512_digest *) result);
+	unsigned char buf[BLKSIZE];
 
-	CAMLreturn(result);
+	struct sha512_ctx ctx_dup = *GET_CTX_STRUCT(ctx);
+
+	intnat ret, rest = Long_val(len);
+
+	caml_release_runtime_system();
+	do {
+	    ret = rest < sizeof(buf) ? rest : sizeof(buf);
+	    ret = read(Long_val(fd), buf, ret);
+	    if (ret <= 0) break;
+	    rest -= ret;
+	    sha512_update(&ctx_dup, buf, ret);
+	} while (ret > 0 && rest > 0);
+	caml_acquire_runtime_system();
+
+	if (ret < 0)
+	    caml_failwith("read error");
+
+	*GET_CTX_STRUCT(ctx) = ctx_dup;
+	CAMLreturn(Val_long(Long_val(len) - rest));
 }
-
-CAMLprim value stub_sha512_copy(value ctx)
-{
-	CAMLparam1(ctx);
-	CAMLlocal1(result);
-
-	result = caml_alloc(sizeof(struct sha512_ctx), Abstract_tag);
-	sha512_copy(GET_CTX_STRUCT(result), GET_CTX_STRUCT(ctx));
-
-	CAMLreturn(result);
-}
-
-#ifndef strdupa
-#define strdupa(s) strcpy(alloca(strlen(s)+1),s)
-#endif
 
 CAMLprim value stub_sha512_file(value name)
 {
 	CAMLparam1(name);
 	CAMLlocal1(result);
 
-	char *name_dup = strdupa(String_val(name));
 	sha512_digest digest;
+	const int len = caml_string_length(name);
+	char *name_dup = alloca(len);
+	memcpy(name_dup, String_val(name), len);
+	name_dup[len] = '\0';
 
 	caml_release_runtime_system();
 	if (sha512_file(name_dup, &digest)) {
@@ -140,30 +144,19 @@ CAMLprim value stub_sha512_file(value name)
 	    caml_failwith("file error");
 	}
 	caml_acquire_runtime_system();
-	result = caml_alloc(sizeof(sha512_digest), Abstract_tag);
-	memcpy((sha512_digest *)result, &digest, sizeof(sha512_digest));
+	result = caml_alloc_string(sizeof(digest));
+	memcpy(Bytes_val(result), &digest, sizeof(digest));
 
 	CAMLreturn(result);
 }
 
-CAMLprim value stub_sha512_to_bin(value digest)
+CAMLprim value stub_sha512_finalize(value ctx)
 {
-	CAMLparam1(digest);
+	CAMLparam1(ctx);
 	CAMLlocal1(result);
 
 	result = caml_alloc_string(64);
-	sha512_to_bin((sha512_digest *) digest, String_val(result));
-
-	CAMLreturn(result);
-}
-
-CAMLprim value stub_sha512_to_hex(value digest)
-{
-	CAMLparam1(digest);
-	CAMLlocal1(result);
-
-	result = caml_alloc_string(128);
-	sha512_to_hex((sha512_digest *) digest, String_val(result));
+	sha512_finalize(GET_CTX_STRUCT(ctx), (sha512_digest *) result);
 
 	CAMLreturn(result);
 }

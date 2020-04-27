@@ -12,3 +12,8 @@
  (alias runtest)
  (deps sample.txt)
  (action (run ./shatest.exe)))
+
+(executable
+  (name bench)
+  (modules bench)
+  (libraries sha benchmark))
