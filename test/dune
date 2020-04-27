@@ -1,17 +1,17 @@
 (executable
-  (name shasum)
-  (modules shasum)
-  (libraries sha))
+ (name shasum)
+ (modules shasum)
+ (libraries sha))
 
 (executable
-  (name shatest)
-  (modules shatest)
-  (libraries sha oUnit))
+ (name shatest)
+ (modules shatest)
+ (libraries sha oUnit))
 
-(alias
-  (name runtest)
-  (deps (:test shatest.exe) sample.txt)
-  (action (run %{test})))
+(rule
+ (alias runtest)
+ (deps sample.txt)
+ (action (run ./shatest.exe)))
 
 (executable
   (name bench)
