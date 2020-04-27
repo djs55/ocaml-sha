@@ -135,7 +135,7 @@ CAMLprim value stub_md5_file(value name)
 	}
 	caml_acquire_runtime_system();
 	result = caml_alloc_string(sizeof(digest));
-	memcpy(String_val(result), &digest, sizeof(digest));
+	memcpy(Bytes_val(result), &digest, sizeof(digest));
 
 	CAMLreturn(result);
 }
