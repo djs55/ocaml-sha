@@ -152,7 +152,7 @@ CAMLprim value stub_sha512_to_bin(value digest)
 	CAMLlocal1(result);
 
 	result = caml_alloc_string(64);
-	sha512_to_bin((sha512_digest *) digest, String_val(result));
+	sha512_to_bin((sha512_digest *) digest, &Byte(result, 0));
 
 	CAMLreturn(result);
 }
@@ -163,7 +163,7 @@ CAMLprim value stub_sha512_to_hex(value digest)
 	CAMLlocal1(result);
 
 	result = caml_alloc_string(128);
-	sha512_to_hex((sha512_digest *) digest, String_val(result));
+	sha512_to_hex((sha512_digest *) digest, &Byte(result, 0));
 
 	CAMLreturn(result);
 }

@@ -154,7 +154,7 @@ CAMLprim value stub_sha1_to_bin(value digest)
 	CAMLlocal1(result);
 
 	result = caml_alloc_string(20);
-	sha1_to_bin((sha1_digest *) digest, String_val(result));
+	sha1_to_bin((sha1_digest *) digest, &Byte(result, 0));
 
 	CAMLreturn(result);
 }
@@ -165,7 +165,7 @@ CAMLprim value stub_sha1_to_hex(value digest)
 	CAMLlocal1(result);
 
 	result = caml_alloc_string(40);
-	sha1_to_hex((sha1_digest *) digest, String_val(result));
+	sha1_to_hex((sha1_digest *) digest, &Byte(result, 0));
 
 	CAMLreturn(result);
 }
