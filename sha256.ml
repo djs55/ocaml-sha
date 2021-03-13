@@ -66,7 +66,7 @@ let channel chan len =
 	while (!left == -1 || !left > 0) && not !eof
 	do
 		let len = if !left < 0 then blksize else (min !left blksize) in
-		let readed = Pervasives.input chan buf 0 len in
+		let readed = Stdlib.input chan buf 0 len in
 		if readed = 0 then
 			eof := true
 		else (
