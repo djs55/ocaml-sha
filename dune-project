@@ -13,7 +13,13 @@
          "Florent Monnier"
          "Forrest L Norvell"
          "Vincent Bernadoff"
-         "David Scott")
+         "David Scott"
+         "Olaf Hering"
+         "Arthur Teisseire"
+         "Nicolás Ojeda Bär"
+         "Christopher Zimmermann"
+         "Thomas Leonard"
+)
 
 (maintainers dave@recoil.org)
 
