@@ -1,3 +1,8 @@
+## v1.14
+
+- Handle `safe-string` by @olafhering, reviewed by @nojb (#47)
+- Remove `--dev` option from `dune` invocation by @arthurteisseire (#48)
+
 ## v1.13
 
 - Update to dune2, fix Windows compilation, make C fns static @nojb (#42)
