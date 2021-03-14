@@ -7,6 +7,7 @@
  (wrapped false)
  (modules sha1 sha256 sha512)
  (flags -warn-error -3)
+ (libraries stdlib-shims)
  (foreign_stubs
   (language c)
   (flags (:include c_flags.sexp))
