@@ -89,3 +89,11 @@ val to_bin : t -> string
 
 (** return a printable hexadecimal representation of the given digest *)
 val to_hex : t -> string
+
+(** Sha256.of_bin digest converts the binary representation of a digest to the
+   internal representation of Sha256.t. *)
+val of_bin : bytes -> t
+
+(** Sha256.of_hex digest converts the hexadecimal representation of a digest to
+   the internal representation of Sha256.t. *)
+val of_hex : string -> t
