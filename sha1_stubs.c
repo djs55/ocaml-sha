@@ -169,3 +169,10 @@ CAMLprim value stub_sha1_to_hex(value digest)
 
 	CAMLreturn(result);
 }
+
+CAMLprim value stub_sha1_equal(value t1, value t2)
+{
+	CAMLparam2(t1, t2);
+	int b = memcmp((sha1_digest *) t1, (sha1_digest *) t2, sizeof(sha1_digest)) == 0;
+	CAMLreturn(Bool_val(b));
+}

@@ -89,3 +89,6 @@ val to_bin : t -> string
 
 (** return a printable hexadecimal representation of the given digest *)
 val to_hex : t -> string
+
+(** Returns whether two hashes are equal. *)
+val equal : t -> t -> bool
