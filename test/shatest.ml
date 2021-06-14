@@ -94,6 +94,15 @@ let test_channel channelfct arr _ =
 		close_in chan;
 		assert_equal r digest) arr
 
+let test_equal string eq arr _ =
+  List.fold_left (fun s (s', _) ->
+	if s = s' then
+		assert_bool "sha eq failed" (eq (string s) (string s'))
+	else
+		assert_bool "sha neq failed" (not (eq (string s) (string s')));
+	s)
+	(List.hd arr |> fst) arr |> ignore
+
 let suite = "SHA binding test" >:::
 	[ "SHA1 example strings" >::
 		test_strings stringfct_sha1 ex_strings_sha1;
@@ -101,18 +110,24 @@ let suite = "SHA binding test" >:::
 		test_file filefct_sha1 ex_files_sha1;
 	  "SHA1 reading few byte from channel" >::
 		test_channel channelfct_sha1 ex_channels_sha1;
+	  "SHA1 equality" >::
+		test_equal Sha1.string Sha1.equal ex_strings_sha1;
 	  "SHA256 example strings" >::
 		test_strings stringfct_sha256 ex_strings_sha256;
 	  "SHA256 reading a file" >::
 		test_file filefct_sha256 ex_files_sha256;
 	  "SHA256 reading few byte from channel" >::
 		test_channel channelfct_sha256 ex_channels_sha256;
+	  "SHA256 equality" >::
+		test_equal Sha256.string Sha256.equal ex_strings_sha256;
 	  "SHA512 example strings" >::
 		test_strings stringfct_sha512 ex_strings_sha512;
 	  "SHA512 reading a file" >::
 		test_file filefct_sha512 ex_files_sha512;
 	  "SHA512 reading few byte from channel" >::
 		test_channel channelfct_sha512 ex_channels_sha512;
+	  "SHA512 equality" >::
+		test_equal Sha512.string Sha512.equal ex_strings_sha512;
 	]
 
 let _ = run_test_tt ~verbose:true suite
