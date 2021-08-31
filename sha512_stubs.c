@@ -174,3 +174,25 @@ CAMLprim value stub_sha512_equal(value t1, value t2)
 	int b = memcmp((sha512_digest *) t1, (sha512_digest *) t2, sizeof(sha512_digest)) == 0;
 	CAMLreturn(Bool_val(b));
 }
+
+CAMLprim value stub_sha512_of_bin(value bin)
+{
+	CAMLparam1(bin);
+	CAMLlocal1(result);
+
+	result = caml_alloc(sizeof(sha512_digest), Abstract_tag);
+	sha512_of_bin((const char *) Bytes_val(bin), (sha512_digest *) result);
+
+	CAMLreturn(result);
+}
+
+CAMLprim value stub_sha512_of_hex(value hex)
+{
+	CAMLparam1(hex);
+	CAMLlocal1(result);
+
+	result = caml_alloc(sizeof(sha512_digest), Abstract_tag);
+	sha512_of_hex(String_val(hex), (sha512_digest *) result);
+
+	CAMLreturn(result);
+}

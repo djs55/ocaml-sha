@@ -174,3 +174,25 @@ CAMLprim value stub_sha256_equal(value t1, value t2)
 	int b = memcmp((sha256_digest *) t1, (sha256_digest *) t2, sizeof(sha256_digest)) == 0;
 	CAMLreturn(Bool_val(b));
 }
+
+CAMLprim value stub_sha256_of_bin(value bin)
+{
+	CAMLparam1(bin);
+	CAMLlocal1(result);
+
+	result = caml_alloc(sizeof(sha256_digest), Abstract_tag);
+	sha256_of_bin((const char *) Bytes_val(bin), (sha256_digest *) result);
+
+	CAMLreturn(result);
+}
+
+CAMLprim value stub_sha256_of_hex(value hex)
+{
+	CAMLparam1(hex);
+	CAMLlocal1(result);
+
+	result = caml_alloc(sizeof(sha256_digest), Abstract_tag);
+	sha256_of_hex(String_val(hex), (sha256_digest *) result);
+
+	CAMLreturn(result);
+}

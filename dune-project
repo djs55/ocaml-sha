@@ -19,6 +19,7 @@
          "Nicolás Ojeda Bär"
          "Christopher Zimmermann"
          "Thomas Leonard"
+         "Antonin Décimo"
 )
 
 (maintainers dave@recoil.org)
@@ -29,6 +30,6 @@
  (description "This is the binding for SHA interface code in OCaml. Offering the same
 interface than the MD5 digest included in the OCaml standard library.
 It's currently providing SHA1, SHA256 and SHA512 hash functions.")
- (depends (dune (>= 2.0)) (stdlib-shims (>= 0.3.0)) (ounit :with-test)))
+ (depends (dune (>= 2.0)) (stdlib-shims (>= 0.3.0)) (ounit2 :with-test)))
 
 (generate_opam_files true)

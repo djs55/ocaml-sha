@@ -23,6 +23,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "bitfn.h"
+#include "util.h"
 
 struct sha512_ctx
 {
@@ -254,7 +255,25 @@ static void sha512_to_hex(sha512_digest *digest, char *out)
 
 	for (p = out, i = 0; i < 8; i++, p += 16)
 		snprintf(p, 17, "%016llx",
-		         (unsigned long long) be64_to_cpu(digest->digest[i]));
+                         (unsigned long long) be64_to_cpu(digest->digest[i]));
+}
+
+/**
+ * sha512_of_bin - Transform binary data into the SHA512 digest
+ */
+static void sha512_of_bin(const char *in, sha512_digest *digest)
+{
+	memcpy(digest->digest, in, sizeof(*digest));
+}
+
+/**
+ * sha512_of_hex - Transform readable data into the SHA512 digest
+ */
+static void sha512_of_hex(const char *in, sha512_digest *digest)
+{
+	if (strlen(in) != 128)
+		return;
+	of_hex((unsigned char *) digest->digest, in, 128);
 }
 
 #endif
