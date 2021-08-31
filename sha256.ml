@@ -28,6 +28,7 @@ external copy : ctx -> ctx = "stub_sha256_copy"
 external to_bin: t -> string = "stub_sha256_to_bin"
 external to_hex: t -> string = "stub_sha256_to_hex"
 external file_fast: string -> t = "stub_sha256_file"
+external equal: t -> t -> bool = "stub_sha256_equal"
 
 let blksize = 4096
 
