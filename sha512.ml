@@ -27,6 +27,8 @@ external finalize: ctx -> t = "stub_sha512_finalize"
 external copy : ctx -> ctx = "stub_sha512_copy"
 external to_bin: t -> string = "stub_sha512_to_bin"
 external to_hex: t -> string = "stub_sha512_to_hex"
+external of_bin: bytes -> t = "stub_sha256_of_bin"
+external of_hex: string -> t = "stub_sha256_of_hex"
 external file_fast: string -> t = "stub_sha512_file"
 external equal: t -> t -> bool = "stub_sha512_equal"
 

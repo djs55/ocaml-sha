@@ -69,9 +69,13 @@ let ex_channels_sha512 =
 	[ ("sample.txt",
 	"07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6") ]
 
-let stringfct_sha1 s = Sha1.to_hex (Sha1.string s)
-let stringfct_sha256 s = Sha256.to_hex (Sha256.string s)
-let stringfct_sha512 s = Sha512.to_hex (Sha512.string s)
+let stringfct_hex_sha1 s = Sha1.to_hex (Sha1.string s)
+let stringfct_hex_sha256 s = Sha256.to_hex (Sha256.string s)
+let stringfct_hex_sha512 s = Sha512.to_hex (Sha512.string s)
+
+let stringfct_bin_sha1 s = Sha1.to_bin (Sha1.string s)
+let stringfct_bin_sha256 s = Sha256.to_bin (Sha256.string s)
+let stringfct_bin_sha512 s = Sha512.to_bin (Sha512.string s)
 
 let filefct_sha1 s = Sha1.to_hex (Sha1.file s)
 let filefct_sha256 s = Sha256.to_hex (Sha256.file s)
@@ -103,31 +107,46 @@ let test_equal string eq arr _ =
 	s)
 	(List.hd arr |> fst) arr |> ignore
 
+let test_of stringfct_to stringfct_of arr _ =
+	List.iter (fun (s,_) -> assert_equal (stringfct_to s) (stringfct_of s)) arr
+
 let suite = "SHA binding test" >:::
 	[ "SHA1 example strings" >::
-		test_strings stringfct_sha1 ex_strings_sha1;
+		test_strings stringfct_hex_sha1 ex_strings_sha1;
 	  "SHA1 reading a file" >::
 		test_file filefct_sha1 ex_files_sha1;
 	  "SHA1 reading few byte from channel" >::
 		test_channel channelfct_sha1 ex_channels_sha1;
 	  "SHA1 equality" >::
 		test_equal Sha1.string Sha1.equal ex_strings_sha1;
+	  "SHA1 converting from binary representation" >::
+		test_of stringfct_bin_sha1 (fun s -> Sha1.(string s |> to_bin |> Bytes.of_string |> of_bin |> to_bin)) ex_strings_sha1;
+	  "SHA1 converting from hexadecimal representation" >::
+		test_of stringfct_hex_sha1 (fun s -> Sha1.(string s |> to_hex |> of_hex |> to_hex)) ex_strings_sha1;
 	  "SHA256 example strings" >::
-		test_strings stringfct_sha256 ex_strings_sha256;
+		test_strings stringfct_hex_sha256 ex_strings_sha256;
 	  "SHA256 reading a file" >::
 		test_file filefct_sha256 ex_files_sha256;
 	  "SHA256 reading few byte from channel" >::
 		test_channel channelfct_sha256 ex_channels_sha256;
 	  "SHA256 equality" >::
 		test_equal Sha256.string Sha256.equal ex_strings_sha256;
+	  "SHA256 converting from binary representation" >::
+		test_of stringfct_bin_sha256 (fun s -> Sha256.(string s |> to_bin |> Bytes.of_string |> of_bin |> to_bin)) ex_strings_sha256;
+	  "SHA256 converting from hexadecimal representation" >::
+		test_of stringfct_hex_sha256 (fun s -> Sha256.(string s |> to_hex |> of_hex |> to_hex)) ex_strings_sha256;
 	  "SHA512 example strings" >::
-		test_strings stringfct_sha512 ex_strings_sha512;
+		test_strings stringfct_hex_sha512 ex_strings_sha512;
 	  "SHA512 reading a file" >::
 		test_file filefct_sha512 ex_files_sha512;
 	  "SHA512 reading few byte from channel" >::
 		test_channel channelfct_sha512 ex_channels_sha512;
 	  "SHA512 equality" >::
 		test_equal Sha512.string Sha512.equal ex_strings_sha512;
+	  "SHA1 converting from binary representation" >::
+		test_of stringfct_bin_sha1 (fun s -> Sha1.(string s |> to_bin |> Bytes.of_string |> of_bin |> to_bin)) ex_strings_sha1;
+	  "SHA1 converting from hexadecimal representation" >::
+		test_of stringfct_hex_sha1 (fun s -> Sha1.(string s |> to_hex |> of_hex |> to_hex)) ex_strings_sha1;
 	]
 
 let _ = run_test_tt ~verbose:true suite

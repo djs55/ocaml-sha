@@ -20,6 +20,7 @@ authors: [
   "Nicolás Ojeda Bär"
   "Christopher Zimmermann"
   "Thomas Leonard"
+  "Antonin Décimo"
 ]
 license: "ISC"
 homepage: "https://github.com/djs55/ocaml-sha"
@@ -27,7 +28,7 @@ bug-reports: "https://github.com/djs55/ocaml-sha/issues"
 depends: [
   "dune" {>= "2.0"}
   "stdlib-shims" {>= "0.3.0"}
-  "ounit" {with-test}
+  "ounit2" {with-test}
 ]
 build: [
   ["dune" "subst"] {pinned}

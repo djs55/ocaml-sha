@@ -92,3 +92,11 @@ val to_hex : t -> string
 
 (** Returns whether two hashes are equal. *)
 val equal : t -> t -> bool
+
+(** Sha256.of_bin digest converts the binary representation of a digest to the
+   internal representation of Sha256.t. *)
+val of_bin : bytes -> t
+
+(** Sha256.of_hex digest converts the hexadecimal representation of a digest to
+   the internal representation of Sha256.t. *)
+val of_hex : string -> t

@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "bitfn.h"
+#include "util.h"
 
 struct sha1_ctx
 {
@@ -286,6 +287,24 @@ static void sha1_to_hex(sha1_digest *digest, char *out)
 	snprintf(out, 41, "%08x%08x%08x%08x%08x",
 		D(0), D(1), D(2), D(3), D(4));
 	#undef D
+}
+
+/**
+ * sha1_of_bin - Transform binary data into the SHA1 digest
+ */
+static void sha1_of_bin(const char *in, sha1_digest *digest)
+{
+	memcpy(digest->digest, in, sizeof(*digest));
+}
+
+/**
+ * sha1_of_hex - Transform readable data into the SHA1 digest
+ */
+static void sha1_of_hex(const char *in, sha1_digest *digest)
+{
+	if (strlen(in) != 40)
+		return;
+	of_hex((unsigned char *) digest->digest, in, 40);
 }
 
 #endif

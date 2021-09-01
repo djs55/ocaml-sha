@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "bitfn.h"
+#include "util.h"
 
 struct sha256_ctx
 {
@@ -231,6 +232,24 @@ static void sha256_to_hex(sha256_digest *digest, char *out)
 
 	for (p = out, i = 0; i < 8; i++, p += 8)
 		snprintf(p, 9, "%08x", be32_to_cpu(digest->digest[i]));
+}
+
+/**
+ * sha256_of_bin - Transform binary data into the SHA256 digest
+ */
+static void sha256_of_bin(const char *in, sha256_digest *digest)
+{
+	memcpy(digest->digest, in, sizeof(*digest));
+}
+
+/**
+ * sha256_of_hex - Transform readable data into the SHA256 digest
+ */
+static void sha256_of_hex(const char *in, sha256_digest *digest)
+{
+	if (strlen(in) != 64)
+		return;
+	of_hex((unsigned char *) digest->digest, in, 64);
 }
 
 #endif
