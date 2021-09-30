@@ -11,4 +11,5 @@
 (rule
  (alias runtest)
  (deps sample.txt)
- (action (run ./shatest.exe)))
+ (action
+  (run ./shatest.exe)))
