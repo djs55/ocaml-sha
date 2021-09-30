@@ -62,6 +62,11 @@ static inline int sha256_file(char *filename, sha256_digest *digest)
 #include <caml/bigarray.h>
 #include <caml/threads.h>
 
+#include <caml/version.h>
+#if OCAML_VERSION < 40600
+#define Bytes_val(x) ((unsigned char *) Bp_val(x))
+#endif
+
 #define GET_CTX_STRUCT(a) ((struct sha256_ctx *) a)
 
 CAMLexport value stub_sha256_init(value unit)

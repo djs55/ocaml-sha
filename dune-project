@@ -1,4 +1,4 @@
-(lang dune 2.0)
+(lang dune 2.9)
 
 (name sha)
 
@@ -30,6 +30,11 @@
  (description "This is the binding for SHA interface code in OCaml. Offering the same
 interface than the MD5 digest included in the OCaml standard library.
 It's currently providing SHA1, SHA256 and SHA512 hash functions.")
- (depends (dune (>= 2.0)) (stdlib-shims (>= 0.3.0)) (ounit2 :with-test)))
+ (depends
+  (ocaml (>= 4.02))
+  (stdlib-shims (>= 0.3.0))
+  (ounit2 :with-test)))
 
 (generate_opam_files true)
+(formatting disabled)
+(use_standard_c_and_cxx_flags true)
