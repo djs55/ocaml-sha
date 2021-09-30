@@ -1,3 +1,9 @@
+## v1.15
+
+- Add `equal` function to compare digests by @MisterDA (#52)
+- Improve documentation formatting by @MisterDA (#51)
+- Add `of_hex` and `of_bin` functions to unserialise `ShaX.t` values by @MisterDA (#50)
+
 ## v1.14
 
 - Handle `safe-string` by @olafhering, reviewed by @nojb (#47)
