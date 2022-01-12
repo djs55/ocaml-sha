@@ -93,8 +93,8 @@ CAMLprim value stub_sha512_update_bigarray(value ctx, value buf)
 {
 	CAMLparam2(ctx, buf);
 	struct sha512_ctx ctx_dup;
-	unsigned char *data = Data_bigarray_val(buf);
-	size_t len = Bigarray_val(buf)->dim[0];
+	unsigned char *data = Caml_ba_data_val(buf);
+	size_t len = Caml_ba_array_val(buf)->dim[0];
 
 	ctx_dup = *GET_CTX_STRUCT(ctx);
 	caml_release_runtime_system();
