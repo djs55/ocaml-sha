@@ -1,3 +1,7 @@
+## v1.15.2
+
+- Use modern Bigarray functions by @MisterDA (#55)
+
 ## v1.15
 
 - Add `equal` function to compare digests by @MisterDA (#52)
