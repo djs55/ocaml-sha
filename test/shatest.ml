@@ -110,6 +110,92 @@ let test_equal string eq arr _ =
 let test_of stringfct_to stringfct_of arr _ =
 	List.iter (fun (s,_) -> assert_equal (stringfct_to s) (stringfct_of s)) arr
 
+(* from: https://www.di-mgt.com.au/sha_testvectors.html *)
+module Vectors = struct
+  type 'a gen = unit -> 'a option
+
+  let sha1str s = Sha1.to_hex (Sha1.string s)
+  let sha1strg g =
+    let ctx = Sha1.init() in
+    let rec loop () = match g() with
+      | None -> ()
+      | Some s -> Sha1.update_string ctx s; loop ()
+    in
+    loop();
+    Sha1.to_hex (Sha1.finalize ctx)
+
+  let sha256str s = Sha256.to_hex (Sha256.string s)
+  let sha256strg g =
+    let ctx = Sha256.init() in
+    let rec loop () = match g() with
+      | None -> ()
+      | Some s -> Sha256.update_string ctx s; loop ()
+    in
+    loop();
+    Sha256.to_hex (Sha256.finalize ctx)
+
+  let sha512str s = Sha512.to_hex (Sha512.string s)
+  let sha512strg g =
+    let ctx = Sha512.init() in
+    let rec loop () = match g() with
+      | None -> ()
+      | Some s -> Sha512.update_string ctx s; loop ()
+    in
+    loop();
+    Sha512.to_hex (Sha512.finalize ctx)
+
+  let gen_repeat n s =
+    let n = ref n in
+    fun () ->
+      if !n=0 then None
+      else (
+        decr n;
+        Some s
+      )
+
+  let test_of ~name ~h:hash expect s =
+    name >:: fun _ctx : unit ->
+      let res = hash s in
+      assert_equal ~printer:(Printf.sprintf "%S") expect res
+
+  [@@@ocaml.warning "-5"]
+
+  let suite_sha256 =
+    "vec256" >::: [
+      test_of ~name:"t1" ~h:sha256str
+        "ba7816bf8f01cfea41414de5dae2223b00361a396177a9cb410ff61f20015ad"
+        "abc";
+      test_of ~name:"t2" ~h:sha256str
+        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" "";
+
+      test_of ~name:"t3" ~h:sha256str
+        "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
+        "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+
+      test_of ~name:"t4" ~h:sha256str
+        "cf5b16a778af8380036ce59e7b0492370b249b11e8f07a51afac45037afee9d1"
+        "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu";
+
+      test_of ~name:"t5_1" ~h:sha256strg
+        "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0"
+        (gen_repeat 100_000 (String.make 10 'a'));
+
+      test_of ~name:"t5_2" ~h:sha256strg
+      "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0"
+      (gen_repeat 10_000 (String.make 100 'a'));
+
+      test_of ~name:"t5_3" ~h:sha256strg
+        "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0"
+        (gen_repeat 1_000_000 (String.make 1 'a'));
+
+      test_of ~name:"t6" ~h:sha256strg
+      "50e72a0e26442fe2552dc3938ac58658228c0cbfb1d2ca872ae435266fcd055e"
+        (gen_repeat 16_777_216
+           "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmno");
+    ]
+
+  end
+
 let suite = "SHA binding test" >:::
 	[ "SHA1 example strings" >::
 		test_strings stringfct_hex_sha1 ex_strings_sha1;
@@ -147,6 +233,8 @@ let suite = "SHA binding test" >:::
 		test_of stringfct_bin_sha1 (fun s -> Sha1.(string s |> to_bin |> Bytes.of_string |> of_bin |> to_bin)) ex_strings_sha1;
 	  "SHA1 converting from hexadecimal representation" >::
 		test_of stringfct_hex_sha1 (fun s -> Sha1.(string s |> to_hex |> of_hex |> to_hex)) ex_strings_sha1;
+
+       Vectors.suite_sha256;
 	]
 
 let _ = run_test_tt_main suite
