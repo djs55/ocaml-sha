@@ -149,4 +149,4 @@ let suite = "SHA binding test" >:::
 		test_of stringfct_hex_sha1 (fun s -> Sha1.(string s |> to_hex |> of_hex |> to_hex)) ex_strings_sha1;
 	]
 
-let _ = run_test_tt ~verbose:true suite
+let _ = run_test_tt_main suite

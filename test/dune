@@ -12,4 +12,4 @@
  (alias runtest)
  (deps sample.txt)
  (action
-  (run ./shatest.exe)))
+  (run ./shatest.exe -verbose)))
