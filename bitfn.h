@@ -20,6 +20,10 @@
 #define BITFN_H
 #include <stdint.h>
 
+// NOTE: Required to build on OpenBSD
+#undef swap32
+#undef swap64
+
 static inline unsigned int rol32(unsigned int word, unsigned int shift)
 {
         return (word << shift) | (word >> (32 - shift));
