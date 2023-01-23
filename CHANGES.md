@@ -1,3 +1,7 @@
+## v1.15.4
+
+- Fix build on OCaml 4.02 and fix SHA equality bug by @djs55 (#61)
+
 ## v1.15.3
 
 - Fix build on OpenBSD by @kit-ty-kate (#58)
