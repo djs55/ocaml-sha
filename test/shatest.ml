@@ -160,7 +160,7 @@ module Vectors = struct
     List.map
       (fun ((hash_name, hash), expect) ->
         let test_name = name ^ "_" ^ hash_name in
-        test_name >:: fun _ctx : unit ->
+        test_name >:: fun _ctx ->
           let res = hash input in
           assert_equal ~printer:(Printf.sprintf "%S") expect res)
       pairs
