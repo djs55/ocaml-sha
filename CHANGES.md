@@ -1,3 +1,8 @@
+## v1.15.3
+
+- Fix build on OpenBSD by @kit-ty-kate (#58)
+- More unit tests by @c-cube (#57)
+
 ## v1.15.2
 
 - Use modern Bigarray functions by @MisterDA (#55)
