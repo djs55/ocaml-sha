@@ -177,7 +177,7 @@ CAMLprim value stub_sha256_equal(value t1, value t2)
 {
 	CAMLparam2(t1, t2);
 	int b = memcmp((sha256_digest *) t1, (sha256_digest *) t2, sizeof(sha256_digest)) == 0;
-	CAMLreturn(Bool_val(b));
+	CAMLreturn(Val_bool(b));
 }
 
 CAMLprim value stub_sha256_of_bin(value bin)
